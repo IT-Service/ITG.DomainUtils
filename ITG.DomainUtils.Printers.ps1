@@ -90,7 +90,6 @@ Function Get-ADPrintQueue {
 		# Количество объектов, включаемых в одну страницу для ldap ответа
 		[Parameter(
 			Mandatory = $false
-			, ParameterSetName = ('LDAPFilter', 'Filter')
 		)]
 		[Int32]
 		$ResultPageSize = 256
@@ -98,7 +97,6 @@ Function Get-ADPrintQueue {
 		# Максимальное количество возвращаемых объектов AD
 		[Parameter(
 			Mandatory = $false
-			, ParameterSetName = ('LDAPFilter', 'Filter')
 		)]
 		[Int32]
 		$ResultSetSize = $null
@@ -106,7 +104,6 @@ Function Get-ADPrintQueue {
 		# путь к контейнеру AD, в котором требуется осуществить поиск
 		[Parameter(
 			Mandatory = $false
-			, ParameterSetName = ('LDAPFilter', 'Filter')
 		)]
 		[String]
 		$SearchBase
@@ -114,7 +111,6 @@ Function Get-ADPrintQueue {
 		# область поиска
 		[Parameter(
 			Mandatory = $false
-			, ParameterSetName = ('LDAPFilter', 'Filter')
 		)]
 		[Microsoft.ActiveDirectory.Management.ADSearchScope]
 		$SearchScope = ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::Subtree )
@@ -122,7 +118,6 @@ Function Get-ADPrintQueue {
 		# Контроллер домена Active Directory
 		[Parameter(
 			Mandatory = $false
-			, ParameterSetName = ('LDAPFilter', 'Filter')
 		)]
 		[String]
 		$Server

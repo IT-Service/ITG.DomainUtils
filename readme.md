@@ -21,13 +21,11 @@
 
 Возвращает один или несколько объектов AD с классом printQueue.
 
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -Filter <String> [-Properties <String[]>] <CommonParameters>
+	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -Filter <String> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] [-Identity] <ADObject> [-Properties <String[]>] <CommonParameters>
+	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] [-Identity] <ADObject> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -LDAPFilter <String> [-Properties <String[]>] <CommonParameters>
-
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
+	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -LDAPFilter <String> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
 ОПИСАНИЕ
 --------
@@ -52,13 +50,11 @@ Get-ADPrinter
 
 ##### СИНТАКСИС
 
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -Filter <String> [-Properties <String[]>] <CommonParameters>
+	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -Filter <String> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] [-Identity] <ADObject> [-Properties <String[]>] <CommonParameters>
+	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] [-Identity] <ADObject> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -LDAPFilter <String> [-Properties <String[]>] <CommonParameters>
-
-	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
+	Get-ADPrintQueue [-AuthType] [-Credential <PSCredential>] -LDAPFilter <String> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
 ##### ВХОДНЫЕ ДАННЫЕ
 

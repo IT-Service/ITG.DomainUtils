@@ -37,6 +37,25 @@
 					<maml:name>Properties</maml:name>
 					<parameterValue required="false">String[]</parameterValue>
 				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>ResultPageSize</maml:name>
+					<parameterValue required="false">Int32</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>ResultSetSize</maml:name>
+					<parameterValue required="false">Int32</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>SearchBase</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>SearchScope</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
 			</syntaxItem>
 			<syntaxItem>
 				<maml:name>Get-ADPrintQueue</maml:name>
@@ -55,6 +74,25 @@
 					<maml:name>Properties</maml:name>
 					<parameterValue required="false">String[]</parameterValue>
 				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>ResultPageSize</maml:name>
+					<parameterValue required="false">Int32</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>ResultSetSize</maml:name>
+					<parameterValue required="false">Int32</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>SearchBase</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>SearchScope</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
 			</syntaxItem>
 			<syntaxItem>
 				<maml:name>Get-ADPrintQueue</maml:name>
@@ -68,20 +106,6 @@
 				<parameter required="true" position="named" pipelineInput="false" globbing="false">
 					<maml:name>LDAPFilter</maml:name>
 					<parameterValue required="true">String</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Properties</maml:name>
-					<parameterValue required="false">String[]</parameterValue>
-				</parameter>
-			</syntaxItem>
-			<syntaxItem>
-				<maml:name>Get-ADPrintQueue</maml:name>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>AuthType</maml:name>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Credential</maml:name>
-					<parameterValue required="false">PSCredential</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Properties</maml:name>
