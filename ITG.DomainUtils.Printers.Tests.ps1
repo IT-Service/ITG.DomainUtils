@@ -15,9 +15,9 @@ Describe 'ITG.DomainUtils module' {
 
 };
 
-Describe 'Get-ADPrintQueue' {
+. "$ModuleDir\$ModuleName.Printers.ps1";
 
-	. "$ModuleDir\$ModuleName.Printers.ps1";
+Describe 'Get-ADPrintQueue' {
 
 	It ': Get-ADPrinter must exist' {
 		'Alias:Get-ADPrinter' | Should Exist;
@@ -46,4 +46,10 @@ Describe 'Get-ADPrintQueue' {
 	};
 
 	#>
+};
+
+Describe 'Test-ADPrintQueue' {
+	It ': Test-ADPrinter must exist' {
+		'Alias:Test-ADPrinter' | Should Exist;
+	};
 };

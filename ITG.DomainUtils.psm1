@@ -86,6 +86,8 @@ Import-LocalizedData;
 Export-ModuleMember `
 	-Function `
 		Get-ADPrintQueue `
+		, Test-ADPrintQueue `
 	-Alias `
 		Get-ADPrinter `
+		, Test-ADPrinter `
 ;
