@@ -278,7 +278,7 @@
 			<dev:version>0.1.0</dev:version>
 		</details>
 		<maml:description>
-			<maml:para>Test-ADPrintQueue выполняет поиск для выявления множества объектов ADObject класса printQueue.</maml:para>
+			<maml:para>Test-ADPrintQueue выполняет поиск для выявления множества объектов ADObject класса printQueue с указанными характеристиками, и возвращает `$true` если такие объекты есть, и `$false` в противном случае.</maml:para>
 			<maml:para>Параметр `Identity` (см. about_ActiveDirectory_Identity) указывает объект Active Directory класса printQueue. Вы можете идентифицировать очередь печати через полное имя (DN), GUID, или printQueue имя (CN). Вы можете указать этот параметр явно или передать его по конвейеру.</maml:para>
 			<maml:para>Для поиска и возврата нескольких объектов используйте параметры `Filter` или `LDAPFilter`. Параметр `Filter` использует PowerShell Expression Language для записи строки запроса для Active Directory (см. about_ActiveDirectory_Filter). Если Вы уже имеете LDAP запрос, используйте параметр `LDAPFilter`.</maml:para>
 		</maml:description>
@@ -493,11 +493,11 @@
 				<dev:type>
 					<maml:name>bool</maml:name>
 					<maml:description>
-						<maml:para>- истина - объекты, соответствующие указанным ограничениям, существуют - ложь - не существуют</maml:para>
+						<maml:para>истина - объекты, соответствующие указанным ограничениям, существуют; ложь - не существуют</maml:para>
 					</maml:description>
 				</dev:type>
 				<maml:description>
-					<maml:para>- истина - объекты, соответствующие указанным ограничениям, существуют - ложь - не существуют</maml:para>
+					<maml:para>истина - объекты, соответствующие указанным ограничениям, существуют; ложь - не существуют</maml:para>
 				</maml:description>
 			</returnValue>
 		</returnValues>

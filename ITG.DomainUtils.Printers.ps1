@@ -174,7 +174,8 @@ Function Test-ADPrintQueue {
 	Определяет существует ли объект AD с классом printQueue с указанными фильтрами.
 .Description
 	Test-ADPrintQueue выполняет поиск для выявления множества
-	объектов ADObject класса printQueue.
+	объектов ADObject класса printQueue с указанными характеристиками, и возвращает
+	`$true` если такие объекты есть, и `$false` в противном случае.
 			
 	Параметр `Identity` (см. about_ActiveDirectory_Identity) указывает объект Active Directory класса printQueue.
 	Вы можете идентифицировать очередь печати через полное имя (DN), GUID, или printQueue имя (CN).
@@ -191,8 +192,8 @@ Function Test-ADPrintQueue {
 	ADObject принимаемый параметром `Identity`.
 .Outputs
 	bool
-	- истина - объекты, соответствующие указанным ограничениям, существуют
-	- ложь - не существуют
+	истина - объекты, соответствующие указанным ограничениям, существуют;
+	ложь - не существуют
 .Link
 	https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueue
 .Link
