@@ -163,21 +163,27 @@ Function Get-ADPrintQueue {
 			$steppablePipeline = $scriptCmd.GetSteppablePipeline( $myInvocation.CommandOrigin );
 			$steppablePipeline.Begin( $PSCmdlet );
 		} catch {
-			throw;
+			Write-Error `
+				-ErrorRecord $_ `
+			;
 		};
 	}
 	process {
 		try {
 			$steppablePipeline.Process( $_ );
 		} catch {
-			throw;
+			Write-Error `
+				-ErrorRecord $_ `
+			;
 		};
 	}
 	end {
 		try {
 			$steppablePipeline.End();
 		} catch {
-			throw;
+			Write-Error `
+				-ErrorRecord $_ `
+			;
 		};
 	}
 }
@@ -374,18 +380,24 @@ Function Install-ADPrintQueuesEnvironment {
 		$PassThru
 	)
 
-	foreach ( $param in 'DomainUtilsBase', 'ContainerClass', 'ContainerDisplayName', 'Description' ) {
-		$null = $PSBoundParameters.Remove( $param );
+	try {
+		foreach ( $param in 'DomainUtilsBase', 'ContainerClass', 'ContainerDisplayName', 'Description' ) {
+			$null = $PSBoundParameters.Remove( $param );
+		};
+		New-ADObject `
+			-Type $ContainerClass `
+			-Path $DomainUtilsBase `
+			-Name $printQueuesContainerName `
+			-Description $Description `
+			-DisplayName $ContainerDisplayName `
+			-ProtectedFromAccidentalDeletion $true `
+			@PSBoundParameters `
+		;
+	} catch {
+		Write-Error `
+			-ErrorRecord $_ `
+		;
 	};
-	New-ADObject `
-		-Type $ContainerClass `
-		-Path $DomainUtilsBase `
-		-Name $printQueuesContainerName `
-		-Description $Description `
-		-DisplayName $ContainerDisplayName `
-		-ProtectedFromAccidentalDeletion $true `
-		@PSBoundParameters `
-	;
 }
 
 Function Get-ADPrintQueueContainer {
@@ -476,19 +488,25 @@ Function Get-ADPrintQueueContainer {
 	)
 
 	process {
-		foreach ( $param in 'PrinterName', 'InputObject', 'DomainUtilsBase', 'ContainerClass' ) {
-			$null = $PSBoundParameters.Remove( $param );
+		try {
+			foreach ( $param in 'PrinterName', 'InputObject', 'DomainUtilsBase', 'ContainerClass' ) {
+				$null = $PSBoundParameters.Remove( $param );
+			};
+			$Filter = "( objectClass -eq '$ContainerClass' )";
+			if ( $InputObject ) {
+				$Filter += " -and ( name -eq '$( $InputObject.PrinterName )'  )";
+			};
+			Get-ADObject `
+				-Filter $Filter `
+				-SearchBase "CN=$printQueuesContainerName,$DomainUtilsBase" `
+				-SearchScope ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::OneLevel ) `
+				@PSBoundParameters `
+			;
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
 		};
-		$Filter = "( objectClass -eq '$ContainerClass' )";
-		if ( $InputObject ) {
-			$Filter += " -and ( name -eq '$( $InputObject.PrinterName )'  )";
-		};
-		Get-ADObject `
-			-Filter $Filter `
-			-SearchBase "CN=$printQueuesContainerName,$DomainUtilsBase" `
-			-SearchScope ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::OneLevel ) `
-			@PSBoundParameters `
-		;
 	}
 }
 
@@ -681,21 +699,27 @@ Function New-ADPrintQueueContainer {
 	)
 
 	process {
-		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'ContainerClass', 'Description' ) {
-			$null = $PSBoundParameters.Remove( $param );
+		try {
+			foreach ( $param in 'InputObject', 'DomainUtilsBase', 'ContainerClass', 'Description' ) {
+				$null = $PSBoundParameters.Remove( $param );
+			};
+			New-ADObject `
+				-Type $ContainerClass `
+				-Path "CN=$printQueuesContainerName,$DomainUtilsBase" `
+				-Name $InputObject.PrinterName `
+				-Description ( [String]::Format(
+					$Description
+					, $InputObject.PrinterName
+					, $InputObject.ServerName
+					, $InputObject.PrintShareName
+				) ) `
+				@PSBoundParameters `
+			;
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
 		};
-		New-ADObject `
-			-Type $ContainerClass `
-			-Path "CN=$printQueuesContainerName,$DomainUtilsBase" `
-			-Name $InputObject.PrinterName `
-			-Description ( [String]::Format(
-				$Description
-				, $InputObject.PrinterName
-				, $InputObject.ServerName
-				, $InputObject.PrintShareName
-			) ) `
-			@PSBoundParameters `
-		;
 	}
 }
 
