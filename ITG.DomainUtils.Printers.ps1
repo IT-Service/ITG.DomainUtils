@@ -394,7 +394,7 @@ Function Get-ADPrintQueueContainer {
 	Возвращает контейнер AD для объекта printQueue. 
 .Description
 	Get-ADPrintQueueContainer возвращает объект контейнера для указанного
-	через InputObject объект printQueue.
+	через InputObject объекта printQueue.
 .Notes
 	Этот командлет не работает со снимками Active Directory.
 .Inputs
@@ -427,7 +427,8 @@ Function Get-ADPrintQueueContainer {
 		)]
 		[Microsoft.ActiveDirectory.Management.ADObject]
 		[ValidateScript( {
-			$_.objectClass -eq 'printQueue'
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
 		} )]
 		$InputObject
 	,
@@ -529,7 +530,8 @@ Function Test-ADPrintQueueContainer {
 		)]
 		[Microsoft.ActiveDirectory.Management.ADObject]
 		[ValidateScript( {
-			$_.objectClass -eq 'printQueue'
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
 		} )]
 		$InputObject
 	,
@@ -575,3 +577,126 @@ Function Test-ADPrintQueueContainer {
 }
 
 New-Alias -Name Test-ADPrinterContainer -Value Test-ADPrintQueueContainer -Force;
+
+Function New-ADPrintQueueContainer {
+<#
+.Synopsis
+	Создаёт контейнер AD для указанного объекта printQueue. 
+.Description
+	New-ADPrintQueueContainer создаёт объект контейнера для указанного
+	через InputObject объекта printQueue.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Outputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	Возвращает контейнер для указанного объекта класса printQueue
+	при выполнении с ключом PassThru.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueContainer
+.Link
+	New-ADObject
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | New-ADPrintQueueContainer
+	Создаёт контейнер для очереди печати 'prn001'.
+.Example
+	Get-ADPrintQueue | New-ADPrintQueueContainer -PassThru | % { do-something }
+	Создаёт контейнеры для всех очередей печати, если они не сущетвуют,
+	и выполняет для каждого созданного то либо иное действие.
+	Если контейнер уже существует, он не удаляется и не пересоздаётся, и дополнительных
+	действий для него выполнено не будет.
+.Example
+	Get-ADPrintQueue | ? { -not ( Test-ADPrintQueueContainer $_ ) } | New-ADPrintQueueContainer -Confirm
+	Создаём только отсутствующие контейнеры для всех зарегистрированных в AD очередей печати.
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $true
+		, ConfirmImpact = 'Medium'
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueContainer'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $true
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
+		} )]
+		$InputObject
+	,
+		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
+	,
+		# класс контейнера, создаваемого для каждого принтера
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$ContainerClass = 'container'
+	,
+		# описание контейнера
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Description = ( $loc.PrintQueueContainerDescription )
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	,
+		# Передавать ли созданный контейнер далее по конвейеру
+		[Switch]
+		$PassThru
+	)
+
+	process {
+		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'ContainerClass', 'Description' ) {
+			$null = $PSBoundParameters.Remove( $param );
+		};
+		New-ADObject `
+			-Type $ContainerClass `
+			-Path "CN=$printQueuesContainerName,$DomainUtilsBase" `
+			-Name $InputObject.PrinterName `
+			-Description ( [String]::Format(
+				$Description
+				, $InputObject.PrinterName
+				, $InputObject.ServerName
+				, $InputObject.PrintShareName
+			) ) `
+			@PSBoundParameters `
+		;
+	}
+}
+
+New-Alias -Name New-ADPrinterContainer -Value New-ADPrintQueueContainer -Force;
