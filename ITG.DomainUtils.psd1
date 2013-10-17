@@ -60,6 +60,7 @@ ProcessorArchitecture = ''
 
 # Модули, которые необходимо импортировать в глобальную среду перед импортированием данного модуля
 RequiredModules = @(
+	@{ ModuleName = 'ActiveDirectory'; ModuleVersion = '1.0'; } `
 )
 
 # Сборки, которые должны быть загружены перед импортированием данного модуля
@@ -100,7 +101,7 @@ FileList = `
 
 # Личные данные, передаваемые в модуль, указанный в параметре ModuleToProcess
 PrivateData = @{
-    ReadmeURL = 'https://github.com/IT-Service/ITG.DomainUtils';
+	ReadmeURL = 'https://github.com/IT-Service/ITG.DomainUtils';
 }
 
 }

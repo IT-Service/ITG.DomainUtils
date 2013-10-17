@@ -227,7 +227,7 @@ ADObject принимаемый параметром `Identity`.
 ##### ССЫЛКИ ПО ТЕМЕ
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueue)
-- Get-ADObject
+- [Get-ADObject][]
 
 #### Test-ADPrintQueue
 
@@ -462,7 +462,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 ##### ССЫЛКИ ПО ТЕМЕ
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueContainer)
-- Get-ADObject
+- [Get-ADObject][]
 - [Get-ADPrintQueue][]
 
 #### New-ADPrintQueueContainer
@@ -592,7 +592,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 ##### ССЫЛКИ ПО ТЕМЕ
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueContainer)
-- New-ADObject
+- [New-ADObject][]
 - [Get-ADPrintQueue][]
 
 #### Test-ADPrintQueueContainer
@@ -692,7 +692,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueContainer)
 - [Get-ADPrintQueueContainer][]
-- Get-ADObject
+- [Get-ADObject][]
 
 #### Install-ADPrintQueuesEnvironment
 
@@ -802,18 +802,20 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 ##### ССЫЛКИ ПО ТЕМЕ
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Install-ADPrintQueuesEnvironment)
-- Get-ADObject
+- [Get-ADObject][]
 
 
 [about_ActiveDirectory_Filter]: http://technet.microsoft.com/library/hh531527.aspx 
 [about_ActiveDirectory_Identity]: http://technet.microsoft.com/library/hh531526.aspx 
 [about_CommonParameters]: http://go.microsoft.com/fwlink/?LinkID=113216 "Describes the parameters that can be used with any cmdlet."
+[Get-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219298> "Gets one or more Active Directory objects."
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
 [Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
 [Install-ADPrintQueuesEnvironment]: <#install-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
 [Microsoft.ActiveDirectory.Management.ADAuthType]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adauthtype.aspx> "ADAuthType Class (Microsoft.ActiveDirectory.Management)"
 [Microsoft.ActiveDirectory.Management.ADObject]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adobject.aspx> "ADObject Class (Microsoft.ActiveDirectory.Management)"
 [Microsoft.ActiveDirectory.Management.ADSearchScope]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adsearchscope.aspx> "ADSearchScope Class (Microsoft.ActiveDirectory.Management)"
+[New-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219323> "Creates an Active Directory object."
 [New-ADPrintQueueContainer]: <#new-adprintqueuecontainer> "Создаёт контейнер AD для указанного объекта printQueue."
 [System.Int32]: <http://msdn.microsoft.com/ru-ru/library/system.int32.aspx> "Int32 Class (System)"
 [System.Management.Automation.PSCredential]: <http://msdn.microsoft.com/ru-ru/library/system.management.automation.pscredential.aspx> "PSCredential Class (System.Management.Automation)"
