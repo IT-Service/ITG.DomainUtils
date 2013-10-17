@@ -22,9 +22,9 @@
 		<syntax>
 			<syntaxItem>
 				<maml:name>Get-ADPrintQueue</maml:name>
-				<parameter required="true" position="named" pipelineInput="false" globbing="false">
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Filter</maml:name>
-					<parameterValue required="true">String</parameterValue>
+					<parameterValue required="false">String</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Properties</maml:name>
@@ -133,12 +133,13 @@
 			</syntaxItem>
 		</syntax>
 		<parameters>
-			<parameter required="true" position="named" pipelineInput="false" globbing="false">
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Filter</maml:name>
 				<maml:description>
 					<maml:para>запрос в синтаксисе PowerShell Expression Language (см. about_ActiveDirectory_Filter)</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
+				<defaultValue>*</defaultValue>
 			</parameter>
 			<parameter required="true" position="2" pipelineInput="true (ByValue)" globbing="false">
 				<maml:name>Identity</maml:name>

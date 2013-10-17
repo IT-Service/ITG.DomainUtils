@@ -21,7 +21,7 @@
 
 Возвращает один или несколько объектов AD с классом printQueue.
 
-	Get-ADPrintQueue -Filter <String> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+	Get-ADPrintQueue [-Filter <String>] [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
 	Get-ADPrintQueue [-Identity] <ADObject> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
@@ -76,7 +76,7 @@ Get-ADPrinter
 
 ##### СИНТАКСИС
 
-	Get-ADPrintQueue -Filter <String> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+	Get-ADPrintQueue [-Filter <String>] [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
 	Get-ADPrintQueue [-Identity] <ADObject> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
@@ -97,8 +97,9 @@ ADObject принимаемый параметром `Identity`.
 - `[String] Filter`
 	запрос в синтаксисе PowerShell Expression Language (см. [about_ActiveDirectory_Filter][])
 	* Тип: [System.String][]
-	* Требуется? да
+	* Требуется? нет
 	* Позиция? named
+	* Значение по умолчанию `*`
 	* Принимать входные данные конвейера? false
 	* Принимать подстановочные знаки? нет
 
@@ -455,8 +456,8 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 #### Install-ADPrintQueuesEnvironment
 
 Создаёт корневой контейнер для контейнеров объектов printQueue.
-   Данную функцию следует вызывать однократно для создания необходимых
-   контейнеров и объектов.
+Данную функцию следует вызывать однократно для создания необходимых
+контейнеров и объектов.
 
 ##### СИНТАКСИС
 

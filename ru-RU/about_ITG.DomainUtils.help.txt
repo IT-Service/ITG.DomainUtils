@@ -21,7 +21,7 @@
 
 Возвращает один или несколько объектов AD с классом printQueue.
 
-	Get-ADPrintQueue -Filter <String> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+	Get-ADPrintQueue [-Filter <String>] [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
 	Get-ADPrintQueue [-Identity] <ADObject> [-Properties <String[]>] [-ResultPageSize <Int32>] [-ResultSetSize <Int32>] [-SearchBase <String>] [-SearchScope] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 

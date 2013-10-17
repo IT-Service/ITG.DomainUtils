@@ -40,11 +40,11 @@ Function Get-ADPrintQueue {
 	param (
 		# запрос в синтаксисе PowerShell Expression Language (см. about_ActiveDirectory_Filter)
 		[Parameter(
-			Mandatory = $true
+			Mandatory = $false
 			, ParameterSetName = 'Filter'
 		)]
 		[String]
-		$Filter
+		$Filter = '*'
 	,
 		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
 		[Parameter(
@@ -304,8 +304,8 @@ Function Install-ADPrintQueuesEnvironment {
 	Создаёт корневой контейнер для контейнеров объектов printQueue. 
 .Description
 	Создаёт корневой контейнер для контейнеров объектов printQueue.
-    Данную функцию следует вызывать однократно для создания необходимых
-    контейнеров и объектов.
+	Данную функцию следует вызывать однократно для создания необходимых
+	контейнеров и объектов.
 .Notes
 	Этот командлет не работает со снимками Active Directory.
 .Outputs
