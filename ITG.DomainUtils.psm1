@@ -87,14 +87,16 @@ Export-ModuleMember `
 	-Function `
 		Get-ADPrintQueue `
 		, Test-ADPrintQueue `
-		, Install-ADPrintQueuesEnvironment `
+		, Initialize-ADPrintQueuesEnvironment `
 		, Get-ADPrintQueueContainer `
 		, Test-ADPrintQueueContainer `
 		, New-ADPrintQueueContainer `
+		, New-ADPrintQueueGroup `
 	-Alias `
 		Get-ADPrinter `
 		, Test-ADPrinter `
 		, Get-ADPrinterContainer `
 		, Test-ADPrinterContainer `
 		, New-ADPrinterContainer `
+		, New-ADPrinterGroup `
 ;

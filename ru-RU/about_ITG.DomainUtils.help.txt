@@ -57,19 +57,28 @@
 
 	Test-ADPrintQueueContainer [[-InputObject] <ADObject>] [-DomainUtilsBase <String>] [-ContainerClass <String>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
+### ADPrintQueueGroup
+
+#### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueGroup][]
+
+Создаёт группы безопасности для указанного объекта printQueue.
+
+	New-ADPrintQueueGroup [-InputObject] <ADObject> [-DomainUtilsBase <String>] [-GroupType <String[]>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+
 ### ADPrintQueuesEnvironment
 
-#### КРАТКОЕ ОПИСАНИЕ [Install-ADPrintQueuesEnvironment][]
+#### КРАТКОЕ ОПИСАНИЕ [Initialize-ADPrintQueuesEnvironment][]
 
 Создаёт корневой контейнер для контейнеров объектов printQueue.
 
-	Install-ADPrintQueuesEnvironment [[-DomainUtilsBase] <String>] [[-ContainerDisplayName] <String>] [[-ContainerClass] <String>] [[-Description] <String>] [[-AuthType]] [[-Credential] <PSCredential>] [[-Server] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Initialize-ADPrintQueuesEnvironment [[-DomainUtilsBase] <String>] [[-ContainerClass] <String>] [[-Description] <String>] [[-AuthType]] [[-Credential] <PSCredential>] [[-Server] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
 [Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
-[Install-ADPrintQueuesEnvironment]: <#install-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
+[Initialize-ADPrintQueuesEnvironment]: <#initialize-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
 [New-ADPrintQueueContainer]: <#new-adprintqueuecontainer> "Создаёт контейнер AD для указанного объекта printQueue."
+[New-ADPrintQueueGroup]: <#new-adprintqueuegroup> "Создаёт группы безопасности для указанного объекта printQueue."
 [Test-ADPrintQueue]: <#test-adprintqueue> "Определяет существует ли объект AD с классом printQueue с указанными фильтрами."
 [Test-ADPrintQueueContainer]: <#test-adprintqueuecontainer> "Проверяет наличие контейнера AD для указанного объекта printQueue."
 

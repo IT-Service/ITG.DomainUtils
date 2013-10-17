@@ -1,5 +1,3 @@
-$printQueuesContainerName = 'printQueues';
-
 Function Get-ADPrintQueue {
 <#
 .Synopsis
@@ -298,7 +296,7 @@ Function Test-ADPrintQueue {
 
 New-Alias -Name Test-ADPrinter -Value Test-ADPrintQueue -Force;
 
-Function Install-ADPrintQueuesEnvironment {
+Function Initialize-ADPrintQueuesEnvironment {
 <#
 .Synopsis
 	Создаёт корневой контейнер для контейнеров объектов printQueue. 
@@ -312,17 +310,17 @@ Function Install-ADPrintQueuesEnvironment {
 	Microsoft.ActiveDirectory.Management.ADObject
 	Возвращает корневой контейнер при ключе -PassThru.
 .Link
-	https://github.com/IT-Service/ITG.DomainUtils#Install-ADPrintQueuesEnvironment
+	https://github.com/IT-Service/ITG.DomainUtils#Initialize-ADPrintQueuesEnvironment
 .Link
 	Get-ADObject
 .Example
-	Install-ADPrintQueuesEnvironment
+	Initialize-ADPrintQueuesEnvironment
 	Создаёт корневой контейнер с параметрами по умолчанию.
 #>
 	[CmdletBinding(
 		SupportsShouldProcess = $true
 		, ConfirmImpact = 'Medium'
-		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Install-ADPrintQueuesEnvironment'
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Initialize-ADPrintQueuesEnvironment'
 	)]
 
 	param (
@@ -332,13 +330,6 @@ Function Install-ADPrintQueuesEnvironment {
 		)]
 		[String]
 		$DomainUtilsBase = "$( ( Get-ADDomain ).DistinguishedName )"
-	,
-		# имя (displayName) контейнера
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$ContainerDisplayName = ( $loc.PrintQueuesContainerName )
 	,
 		# класс контейнера, создаваемого для каждого принтера
 		[Parameter(
@@ -381,15 +372,14 @@ Function Install-ADPrintQueuesEnvironment {
 	)
 
 	try {
-		foreach ( $param in 'DomainUtilsBase', 'ContainerClass', 'ContainerDisplayName', 'Description' ) {
+		foreach ( $param in 'DomainUtilsBase', 'ContainerClass', 'Description' ) {
 			$null = $PSBoundParameters.Remove( $param );
 		};
 		New-ADObject `
 			-Type $ContainerClass `
 			-Path $DomainUtilsBase `
-			-Name $printQueuesContainerName `
+			-Name $loc.printQueuesContainerName `
 			-Description $Description `
-			-DisplayName $ContainerDisplayName `
 			-ProtectedFromAccidentalDeletion $true `
 			@PSBoundParameters `
 		;
@@ -494,11 +484,11 @@ Function Get-ADPrintQueueContainer {
 			};
 			$Filter = "( objectClass -eq '$ContainerClass' )";
 			if ( $InputObject ) {
-				$Filter += " -and ( name -eq '$( $InputObject.PrinterName )'  )";
+				$Filter += " -and ( name -eq '$( [String]::Format( $loc.printQueueContainerName, $InputObject.PrinterName ) )'  )";
 			};
 			Get-ADObject `
 				-Filter $Filter `
-				-SearchBase "CN=$printQueuesContainerName,$DomainUtilsBase" `
+				-SearchBase "CN=$( $loc.printQueuesContainerName ),$( $DomainUtilsBase )" `
 				-SearchScope ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::OneLevel ) `
 				@PSBoundParameters `
 			;
@@ -705,8 +695,8 @@ Function New-ADPrintQueueContainer {
 			};
 			New-ADObject `
 				-Type $ContainerClass `
-				-Path "CN=$printQueuesContainerName,$DomainUtilsBase" `
-				-Name $InputObject.PrinterName `
+				-Path "CN=$( $loc.printQueuesContainerName ),$( $DomainUtilsBase )" `
+				-Name ( [String]::Format( $loc.printQueueContainerName, $InputObject.PrinterName ) ) `
 				-Description ( [String]::Format(
 					$Description
 					, $InputObject.PrinterName
@@ -724,3 +714,137 @@ Function New-ADPrintQueueContainer {
 }
 
 New-Alias -Name New-ADPrinterContainer -Value New-ADPrintQueueContainer -Force;
+
+Function New-ADPrintQueueGroup {
+<#
+.Synopsis
+	Создаёт группы безопасности для указанного объекта printQueue. 
+.Description
+	New-ADPrintQueueGroup создаёт группы безопасности
+	(Пользователи принтера, Операторы принтера) для указанного
+	через InputObject объекта printQueue.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueGroup
+.Link
+	New-ADObject
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | New-ADPrintQueueGroup
+	Создаёт группы безопасности для очереди печати 'prn001'.
+.Example
+	Get-ADPrintQueue | New-ADPrintQueueGroup -GroupType User
+	Создаёт группы безопасности "Пользователи принтера" для всех обнаруженных
+	очередей печати.
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $true
+		, ConfirmImpact = 'Medium'
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueGroup'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $true
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
+		} )]
+		$InputObject
+	,
+		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
+	,
+		# тип группы: Users (группа пользователей), Administrators (группа администраторов).
+		# Группа пользователей получит право применения групповой политики для этой очереди печати, и право печати.
+		# Группа администраторов не получит право применения GPO, но получит право печати и право управления всеми документами
+		# в указанной очереди печати.
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String[]]
+		[ValidateSet( 'Users', 'Administrators' )]
+		$GroupType = ( 'Users', 'Administrators' )
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	,
+		# Передавать ли созданные группы далее по конвейеру
+		[Switch]
+		$PassThru
+	)
+
+	process {
+		foreach ( $param in 'InputObject', 'DomainUtilsBase' ) {
+			$null = $PSBoundParameters.Remove( $param );
+		};
+		foreach ( $SingleGroupType in $GroupType ) {
+			try {
+				New-ADObject `
+					-Type 'group' `
+					-Path "CN=$( [String]::Format( $loc.printQueueContainerName, $InputObject.PrinterName ) ),CN=$( $loc.printQueuesContainerName ),$( $DomainUtilsBase )" `
+					-Name ( [String]::Format( $loc."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) ) `
+					-Description ( [String]::Format(
+						$loc."printQueue$( $SingleGroupType )GroupDescription"
+						, $InputObject.PrinterName
+						, $InputObject.ServerName
+						, $InputObject.PrintShareName
+					) ) `
+					-OtherAttributes @{
+						groupType = 0x80000004;
+						info = ( [String]::Format(
+							$loc."printQueue$( $SingleGroupType )GroupInfo"
+							, $InputObject.PrinterName
+							, $InputObject.ServerName
+							, $InputObject.PrintShareName
+						) );
+						sAMAccountName = ( [String]::Format(
+							$loc."printQueue$( $SingleGroupType )GroupAccountName"
+							, $InputObject.PrinterName
+							, $InputObject.ServerName
+						) );
+					} `
+					@PSBoundParameters `
+				;
+			} catch {
+				Write-Error `
+					-ErrorRecord $_ `
+				;
+			};
+		};
+	}
+}
+
+New-Alias -Name New-ADPrinterGroup -Value New-ADPrintQueueGroup -Force;

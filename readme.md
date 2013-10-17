@@ -57,13 +57,21 @@
 
 	Test-ADPrintQueueContainer [[-InputObject] <ADObject>] [-DomainUtilsBase <String>] [-ContainerClass <String>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
+### ADPrintQueueGroup
+
+#### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueGroup][]
+
+Создаёт группы безопасности для указанного объекта printQueue.
+
+	New-ADPrintQueueGroup [-InputObject] <ADObject> [-DomainUtilsBase <String>] [-GroupType <String[]>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+
 ### ADPrintQueuesEnvironment
 
-#### КРАТКОЕ ОПИСАНИЕ [Install-ADPrintQueuesEnvironment][]
+#### КРАТКОЕ ОПИСАНИЕ [Initialize-ADPrintQueuesEnvironment][]
 
 Создаёт корневой контейнер для контейнеров объектов printQueue.
 
-	Install-ADPrintQueuesEnvironment [[-DomainUtilsBase] <String>] [[-ContainerDisplayName] <String>] [[-ContainerClass] <String>] [[-Description] <String>] [[-AuthType]] [[-Credential] <PSCredential>] [[-Server] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Initialize-ADPrintQueuesEnvironment [[-DomainUtilsBase] <String>] [[-ContainerClass] <String>] [[-Description] <String>] [[-AuthType]] [[-Credential] <PSCredential>] [[-Server] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 ОПИСАНИЕ
 --------
@@ -694,7 +702,120 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 - [Get-ADPrintQueueContainer][]
 - [Get-ADObject][]
 
-#### Install-ADPrintQueuesEnvironment
+#### New-ADPrintQueueGroup
+
+[New-ADPrintQueueGroup][] создаёт группы безопасности
+(Пользователи принтера, Операторы принтера) для указанного
+через InputObject объекта printQueue.
+
+##### ПСЕВДОНИМЫ
+
+New-ADPrinterGroup
+
+##### СИНТАКСИС
+
+	New-ADPrintQueueGroup [-InputObject] <ADObject> [-DomainUtilsBase <String>] [-GroupType <String[]>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+
+##### ВХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADObject][]
+ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ПАРАМЕТРЫ
+
+- `[ADObject] InputObject`
+	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
+	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
+	* Требуется? да
+	* Позиция? 1
+	* Принимать входные данные конвейера? true (ByValue)
+	* Принимать подстановочные знаки? нет
+
+- `[String] DomainUtilsBase`
+	путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( ( Get-ADDomain ).DistinguishedName )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String[]] GroupType`
+	тип группы: Users (группа пользователей), Administrators (группа администраторов).
+	Группа пользователей получит право применения групповой политики для этой очереди печати, и право печати.
+	Группа администраторов не получит право применения GPO, но получит право печати и право управления всеми документами
+	в указанной очереди печати.
+	* Тип: [System.String][][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( 'Users', 'Administrators' )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[ADAuthType] AuthType`
+	Метод аутентификации
+	* Тип: [Microsoft.ActiveDirectory.Management.ADAuthType][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `Negotiate`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[PSCredential] Credential`
+	Учётные данные для выполнения данной операции
+	* Тип: [System.Management.Automation.PSCredential][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Server`
+	Контроллер домена Active Directory
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[SwitchParameter] PassThru`
+	Передавать ли созданные группы далее по конвейеру
+	
+
+- `[SwitchParameter] WhatIf`
+	* Псевдонимы: wi
+
+- `[SwitchParameter] Confirm`
+	* Псевдонимы: cf
+
+- `<CommonParameters>`
+	Этот командлет поддерживает общие параметры: Verbose, Debug,
+	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+	[about_CommonParameters][].
+
+
+##### ПРИМЕРЫ
+
+1. Создаёт группы безопасности для очереди печати 'prn001'.
+
+		Get-ADPrintQueue -Filter {name -eq 'prn001'} | New-ADPrintQueueGroup
+
+2. Создаёт группы безопасности "Пользователи принтера" для всех обнаруженных
+очередей печати.
+
+		Get-ADPrintQueue | New-ADPrintQueueGroup -GroupType User
+
+##### ПРИМЕЧАНИЯ
+
+Этот командлет не работает со снимками Active Directory.
+
+##### ССЫЛКИ ПО ТЕМЕ
+
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueGroup)
+- [New-ADObject][]
+- [Get-ADPrintQueue][]
+
+#### Initialize-ADPrintQueuesEnvironment
 
 Создаёт корневой контейнер для контейнеров объектов printQueue.
 Данную функцию следует вызывать однократно для создания необходимых
@@ -702,7 +823,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 
 ##### СИНТАКСИС
 
-	Install-ADPrintQueuesEnvironment [[-DomainUtilsBase] <String>] [[-ContainerDisplayName] <String>] [[-ContainerClass] <String>] [[-Description] <String>] [[-AuthType]] [[-Credential] <PSCredential>] [[-Server] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
+	Initialize-ADPrintQueuesEnvironment [[-DomainUtilsBase] <String>] [[-ContainerClass] <String>] [[-Description] <String>] [[-AuthType]] [[-Credential] <PSCredential>] [[-Server] <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
 ##### ВЫХОДНЫЕ ДАННЫЕ
 
@@ -720,20 +841,11 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 	* Принимать входные данные конвейера? false
 	* Принимать подстановочные знаки? нет
 
-- `[String] ContainerDisplayName`
-	имя (displayName) контейнера
-	* Тип: [System.String][]
-	* Требуется? нет
-	* Позиция? 2
-	* Значение по умолчанию `( $loc.PrintQueuesContainerName )`
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
 - `[String] ContainerClass`
 	класс контейнера, создаваемого для каждого принтера
 	* Тип: [System.String][]
 	* Требуется? нет
-	* Позиция? 3
+	* Позиция? 2
 	* Значение по умолчанию `container`
 	* Принимать входные данные конвейера? false
 	* Принимать подстановочные знаки? нет
@@ -742,7 +854,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 	описание контейнера
 	* Тип: [System.String][]
 	* Требуется? нет
-	* Позиция? 4
+	* Позиция? 3
 	* Значение по умолчанию `( $loc.PrintQueuesContainerDescription )`
 	* Принимать входные данные конвейера? false
 	* Принимать подстановочные знаки? нет
@@ -751,7 +863,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 	Метод аутентификации
 	* Тип: [Microsoft.ActiveDirectory.Management.ADAuthType][]
 	* Требуется? нет
-	* Позиция? 5
+	* Позиция? 4
 	* Значение по умолчанию `Negotiate`
 	* Принимать входные данные конвейера? false
 	* Принимать подстановочные знаки? нет
@@ -760,7 +872,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 	Учётные данные для выполнения данной операции
 	* Тип: [System.Management.Automation.PSCredential][]
 	* Требуется? нет
-	* Позиция? 6
+	* Позиция? 5
 	* Принимать входные данные конвейера? false
 	* Принимать подстановочные знаки? нет
 
@@ -768,7 +880,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 	Контроллер домена Active Directory
 	* Тип: [System.String][]
 	* Требуется? нет
-	* Позиция? 7
+	* Позиция? 6
 	* Принимать входные данные конвейера? false
 	* Принимать подстановочные знаки? нет
 
@@ -793,7 +905,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 
 1. Создаёт корневой контейнер с параметрами по умолчанию.
 
-		Install-ADPrintQueuesEnvironment
+		Initialize-ADPrintQueuesEnvironment
 
 ##### ПРИМЕЧАНИЯ
 
@@ -801,7 +913,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 
 ##### ССЫЛКИ ПО ТЕМЕ
 
-- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Install-ADPrintQueuesEnvironment)
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Initialize-ADPrintQueuesEnvironment)
 - [Get-ADObject][]
 
 
@@ -811,12 +923,13 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [Get-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219298> "Gets one or more Active Directory objects."
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
 [Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
-[Install-ADPrintQueuesEnvironment]: <#install-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
+[Initialize-ADPrintQueuesEnvironment]: <#initialize-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
 [Microsoft.ActiveDirectory.Management.ADAuthType]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adauthtype.aspx> "ADAuthType Class (Microsoft.ActiveDirectory.Management)"
 [Microsoft.ActiveDirectory.Management.ADObject]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adobject.aspx> "ADObject Class (Microsoft.ActiveDirectory.Management)"
 [Microsoft.ActiveDirectory.Management.ADSearchScope]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adsearchscope.aspx> "ADSearchScope Class (Microsoft.ActiveDirectory.Management)"
 [New-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219323> "Creates an Active Directory object."
 [New-ADPrintQueueContainer]: <#new-adprintqueuecontainer> "Создаёт контейнер AD для указанного объекта printQueue."
+[New-ADPrintQueueGroup]: <#new-adprintqueuegroup> "Создаёт группы безопасности для указанного объекта printQueue."
 [System.Int32]: <http://msdn.microsoft.com/ru-ru/library/system.int32.aspx> "Int32 Class (System)"
 [System.Management.Automation.PSCredential]: <http://msdn.microsoft.com/ru-ru/library/system.management.automation.pscredential.aspx> "PSCredential Class (System.Management.Automation)"
 [System.String]: <http://msdn.microsoft.com/ru-ru/library/system.string.aspx> "String Class (System)"
