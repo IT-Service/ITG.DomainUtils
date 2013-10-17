@@ -45,6 +45,12 @@
 
 	Get-ADPrintQueueContainer [[-InputObject] <ADObject>] [-Properties <String[]>] [-DomainUtilsBase <String>] [-ContainerClass <String>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
 
+#### КРАТКОЕ ОПИСАНИЕ [Test-ADPrintQueueContainer][]
+
+Проверяет наличие контейнера AD для указанного объекта printQueue.
+
+	Test-ADPrintQueueContainer [[-InputObject] <ADObject>] [-DomainUtilsBase <String>] [-ContainerClass <String>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+
 ### ADPrintQueuesEnvironment
 
 #### КРАТКОЕ ОПИСАНИЕ [Install-ADPrintQueuesEnvironment][]
@@ -441,7 +447,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 
 1. Возвращает контейнер для очереди печати 'prn001'.
 
-		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueue
+		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueueContainer
 
 ##### ПРИМЕЧАНИЯ
 
@@ -452,6 +458,105 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueContainer)
 - Get-ADObject
 - [Get-ADPrintQueue][]
+
+#### Test-ADPrintQueueContainer
+
+Проверяет наличие контейнера AD для указанного объекта printQueue.
+
+##### ПСЕВДОНИМЫ
+
+Test-ADPrinterContainer
+
+##### СИНТАКСИС
+
+	Test-ADPrintQueueContainer [[-InputObject] <ADObject>] [-DomainUtilsBase <String>] [-ContainerClass <String>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+
+##### ВХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADObject][]
+ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ВЫХОДНЫЕ ДАННЫЕ
+
+- bool
+истина - объекты, соответствующие указанным ограничениям, существуют;
+ложь - не существуют
+
+##### ПАРАМЕТРЫ
+
+- `[ADObject] InputObject`
+	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
+	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
+	* Требуется? нет
+	* Позиция? 1
+	* Принимать входные данные конвейера? true (ByValue)
+	* Принимать подстановочные знаки? нет
+
+- `[String] DomainUtilsBase`
+	путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( ( Get-ADDomain ).DistinguishedName )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] ContainerClass`
+	класс контейнера, создаваемого для каждого принтера
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `container`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[ADAuthType] AuthType`
+	Метод аутентификации
+	* Тип: [Microsoft.ActiveDirectory.Management.ADAuthType][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `Negotiate`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[PSCredential] Credential`
+	Учётные данные для выполнения данной операции
+	* Тип: [System.Management.Automation.PSCredential][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Server`
+	Контроллер домена Active Directory
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `<CommonParameters>`
+	Этот командлет поддерживает общие параметры: Verbose, Debug,
+	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+	[about_CommonParameters][].
+
+
+##### ПРИМЕРЫ
+
+1. Проверяем наличие контейнера для очереди печати 'prn001'.
+
+		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Test-ADPrintQueueContainer
+
+##### ПРИМЕЧАНИЯ
+
+Этот командлет не работает со снимками Active Directory.
+
+##### ССЫЛКИ ПО ТЕМЕ
+
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueContainer)
+- [Get-ADPrintQueueContainer][]
+- Get-ADObject
 
 #### Install-ADPrintQueuesEnvironment
 
@@ -577,6 +682,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [System.Management.Automation.PSCredential]: <http://msdn.microsoft.com/ru-ru/library/system.management.automation.pscredential.aspx> "PSCredential Class (System.Management.Automation)"
 [System.String]: <http://msdn.microsoft.com/ru-ru/library/system.string.aspx> "String Class (System)"
 [Test-ADPrintQueue]: <#test-adprintqueue> "Определяет существует ли объект AD с классом printQueue с указанными фильтрами."
+[Test-ADPrintQueueContainer]: <#test-adprintqueuecontainer> "Проверяет наличие контейнера AD для указанного объекта printQueue."
 
 ---------------------------------------
 

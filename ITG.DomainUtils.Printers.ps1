@@ -151,7 +151,7 @@ Function Get-ADPrintQueue {
 			$outBuffer = $null;
 			if ( $PSBoundParameters.TryGetValue( 'OutBuffer', [ref]$outBuffer ) ) {
 				$PSBoundParameters['OutBuffer'] = 1;
-			}
+			};
 			$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(
 				'Get-ADObject'
 				, [System.Management.Automation.CommandTypes]::Cmdlet
@@ -286,19 +286,7 @@ Function Test-ADPrintQueue {
 	)
 
 	process {
-		try {
-			$outBuffer = $null;
-			if ( $PSBoundParameters.TryGetValue( 'OutBuffer', [ref]$outBuffer ) ) {
-				$PSBoundParameters['OutBuffer'] = 1;
-			}
-			$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(
-				'Get-ADPrintQueue'
-				, [System.Management.Automation.CommandTypes]::Function
-			);
-			[bool] ( & $wrappedCmd @PSBoundParameters );
-		} catch {
-			throw;
-		};
+		[bool] ( Get-ADPrintQueue @PSBoundParameters );
 	}
 }
 
@@ -423,7 +411,7 @@ Function Get-ADPrintQueueContainer {
 .Link
 	Get-ADPrintQueue
 .Example
-	Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueue
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueueContainer
 	Возвращает контейнер для очереди печати 'prn001'.
 #>
 	[CmdletBinding(
@@ -504,3 +492,86 @@ Function Get-ADPrintQueueContainer {
 }
 
 New-Alias -Name Get-ADPrinterContainer -Value Get-ADPrintQueueContainer -Force;
+
+Function Test-ADPrintQueueContainer {
+<#
+.Synopsis
+	Проверяет наличие контейнера AD для указанного объекта printQueue. 
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Outputs
+	bool
+	истина - объекты, соответствующие указанным ограничениям, существуют;
+	ложь - не существуют
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueContainer
+.Link
+	Get-ADPrintQueueContainer
+.Link
+	Get-ADObject
+.Example
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | Test-ADPrintQueueContainer
+	Проверяем наличие контейнера для очереди печати 'prn001'.
+#>
+	[CmdletBinding(
+		HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueContainer'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $false
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			$_.objectClass -eq 'printQueue'
+		} )]
+		$InputObject
+	,
+		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
+	,
+		# класс контейнера, создаваемого для каждого принтера
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$ContainerClass = 'container'
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	)
+
+	process {
+		[bool] ( Get-ADPrintQueueContainer @PSBoundParameters );
+	}
+}
+
+New-Alias -Name Test-ADPrinterContainer -Value Test-ADPrintQueueContainer -Force;
