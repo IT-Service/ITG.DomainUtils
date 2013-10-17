@@ -79,7 +79,7 @@ Function Import-LocalizedData {
 	return $loc;
 };
 
-Import-LocalizedData;
+$loc = Import-LocalizedData;
 
 . (	Join-Path -Path $CurrentDir -ChildPath 'ITG.DomainUtils.Printers.ps1' );
 
@@ -87,7 +87,10 @@ Export-ModuleMember `
 	-Function `
 		Get-ADPrintQueue `
 		, Test-ADPrintQueue `
+		, Install-ADPrintQueuesEnvironment `
+		, Get-ADPrintQueueContainer `
 	-Alias `
 		Get-ADPrinter `
 		, Test-ADPrinter `
+		, Get-ADPrinterContainer `
 ;

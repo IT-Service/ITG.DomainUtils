@@ -1,3 +1,5 @@
+$printQueuesContainerName = 'printQueues';
+
 Function Get-ADPrintQueue {
 <#
 .Synopsis
@@ -36,20 +38,6 @@ Function Get-ADPrintQueue {
 	)]
 
 	param (
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
-	,
 		# запрос в синтаксисе PowerShell Expression Language (см. about_ActiveDirectory_Filter)
 		[Parameter(
 			Mandatory = $true
@@ -81,7 +69,15 @@ Function Get-ADPrintQueue {
 			Mandatory = $false
 		)]
 		[String[]]
-		$Properties
+		$Properties = @(
+			'DistinguishedName'
+			, 'Name'
+			, 'printerName'
+			, 'printShareName'
+			, 'serverName'
+			, 'ObjectClass'
+			, 'ObjectGUID'
+		)
 	,
 		# Количество объектов, включаемых в одну страницу для ldap ответа
 		[Parameter(
@@ -110,6 +106,20 @@ Function Get-ADPrintQueue {
 		)]
 		[Microsoft.ActiveDirectory.Management.ADSearchScope]
 		$SearchScope = ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::Subtree )
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -207,20 +217,6 @@ Function Test-ADPrintQueue {
 	)]
 
 	param (
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
-	,
 		# запрос в синтаксисе PowerShell Expression Language (см. about_ActiveDirectory_Filter)
 		[Parameter(
 			Mandatory = $true
@@ -247,27 +243,6 @@ Function Test-ADPrintQueue {
 		[String]
 		$LDAPFilter
 	,
-		# Перечень свойств объекта printQueue для запроса из ActiveDirectory
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String[]]
-		$Properties
-	,
-		# Количество объектов, включаемых в одну страницу для ldap ответа
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Int32]
-		$ResultPageSize = 256
-	,
-		# Максимальное количество возвращаемых объектов AD
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Int32]
-		$ResultSetSize = $null
-	,
 		# путь к контейнеру AD, в котором требуется осуществить поиск
 		[Parameter(
 			Mandatory = $false
@@ -281,6 +256,20 @@ Function Test-ADPrintQueue {
 		)]
 		[Microsoft.ActiveDirectory.Management.ADSearchScope]
 		$SearchScope = ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::Subtree )
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -308,3 +297,202 @@ Function Test-ADPrintQueue {
 }
 
 New-Alias -Name Test-ADPrinter -Value Test-ADPrintQueue -Force;
+
+Function Install-ADPrintQueuesEnvironment {
+<#
+.Synopsis
+	Создаёт корневой контейнер для контейнеров объектов printQueue. 
+.Description
+	Создаёт корневой контейнер для контейнеров объектов printQueue. 
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Outputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	Возвращает корневой контейнер при ключе -PassThru.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#Install-ADPrintQueuesEnvironment
+.Link
+	Get-ADObject
+.Example
+	Install-ADPrintQueuesEnvironment
+	Создаёт корневой контейнер с параметрами по умолчанию.
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $true
+		, ConfirmImpact = 'Medium'
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Install-ADPrintQueuesEnvironment'
+	)]
+
+	param (
+		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$DomainUtilsBase = "$( ( Get-ADDomain ).DistinguishedName )"
+	,
+		# имя (displayName) контейнера
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$ContainerDisplayName = ( $loc.PrintQueuesContainerName )
+	,
+		# класс контейнера, создаваемого для каждого принтера
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$ContainerClass = 'container'
+	,
+		# описание контейнера
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Description = ( $loc.PrintQueuesContainerDescription )
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	,
+		# Передавать ли созданный контейнер далее по конвейеру
+		[Switch]
+		$PassThru
+	)
+
+	foreach ( $param in 'DomainUtilsBase', 'ContainerClass', 'ContainerDisplayName', 'Description' ) {
+		$null = $PSBoundParameters.Remove( $param );
+	};
+	New-ADObject `
+		-Type $ContainerClass `
+		-Path $DomainUtilsBase `
+		-Name $printQueuesContainerName `
+		-Description $Description `
+		-DisplayName $ContainerDisplayName `
+		-ProtectedFromAccidentalDeletion $true `
+		@PSBoundParameters `
+	;
+}
+
+Function Get-ADPrintQueueContainer {
+<#
+.Synopsis
+	Возвращает контейнер AD для объекта printQueue. 
+.Description
+	Get-ADPrintQueueContainer возвращает объект контейнера для указанного
+	через InputObject объект printQueue.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+	Если объект не указан, будут возвращены все контейнеры созданные для очередей печати.
+.Outputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	Возвращает контейнер для указанного объекта класса printQueue.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueContainer
+.Link
+	Get-ADObject
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueue
+	Возвращает контейнер для очереди печати 'prn001'.
+#>
+	[CmdletBinding(
+		HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueContainer'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $false
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			$_.objectClass -eq 'printQueue'
+		} )]
+		$InputObject
+	,
+		# Перечень свойств объекта контейнера для запроса из ActiveDirectory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String[]]
+		$Properties
+	,
+		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
+	,
+		# класс контейнера, создаваемого для каждого принтера
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$ContainerClass = 'container'
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	)
+
+	process {
+		foreach ( $param in 'PrinterName', 'InputObject', 'DomainUtilsBase', 'ContainerClass' ) {
+			$null = $PSBoundParameters.Remove( $param );
+		};
+		$Filter = "( objectClass -eq '$ContainerClass' )";
+		if ( $InputObject ) {
+			$Filter += " -and ( name -eq '$( $InputObject.PrinterName )'  )";
+		};
+		Get-ADObject `
+			-Filter $Filter `
+			-SearchBase "CN=$printQueuesContainerName,$DomainUtilsBase" `
+			-SearchScope ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::OneLevel ) `
+			@PSBoundParameters `
+		;
+	}
+}
+
+New-Alias -Name Get-ADPrinterContainer -Value Get-ADPrintQueueContainer -Force;

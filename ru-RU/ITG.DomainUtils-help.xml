@@ -22,13 +22,6 @@
 		<syntax>
 			<syntaxItem>
 				<maml:name>Get-ADPrintQueue</maml:name>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>AuthType</maml:name>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Credential</maml:name>
-					<parameterValue required="false">PSCredential</parameterValue>
-				</parameter>
 				<parameter required="true" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Filter</maml:name>
 					<parameterValue required="true">String</parameterValue>
@@ -53,19 +46,19 @@
 					<maml:name>SearchScope</maml:name>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Server</maml:name>
-					<parameterValue required="false">String</parameterValue>
-				</parameter>
-			</syntaxItem>
-			<syntaxItem>
-				<maml:name>Get-ADPrintQueue</maml:name>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>AuthType</maml:name>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Credential</maml:name>
 					<parameterValue required="false">PSCredential</parameterValue>
 				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+			</syntaxItem>
+			<syntaxItem>
+				<maml:name>Get-ADPrintQueue</maml:name>
 				<parameter required="true" position="2" pipelineInput="true (ByValue)" globbing="false">
 					<maml:name>Identity</maml:name>
 					<parameterValue required="true">ADObject</parameterValue>
@@ -90,19 +83,19 @@
 					<maml:name>SearchScope</maml:name>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Server</maml:name>
-					<parameterValue required="false">String</parameterValue>
-				</parameter>
-			</syntaxItem>
-			<syntaxItem>
-				<maml:name>Get-ADPrintQueue</maml:name>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>AuthType</maml:name>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Credential</maml:name>
 					<parameterValue required="false">PSCredential</parameterValue>
 				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+			</syntaxItem>
+			<syntaxItem>
+				<maml:name>Get-ADPrintQueue</maml:name>
 				<parameter required="true" position="named" pipelineInput="false" globbing="false">
 					<maml:name>LDAPFilter</maml:name>
 					<parameterValue required="true">String</parameterValue>
@@ -127,26 +120,19 @@
 					<maml:name>SearchScope</maml:name>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>AuthType</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Credential</maml:name>
+					<parameterValue required="false">PSCredential</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Server</maml:name>
 					<parameterValue required="false">String</parameterValue>
 				</parameter>
 			</syntaxItem>
 		</syntax>
 		<parameters>
-			<parameter required="false" position="named" pipelineInput="false" globbing="false">
-				<maml:name>AuthType</maml:name>
-				<maml:description>
-					<maml:para>Метод аутентификации</maml:para>
-				</maml:description>
-				<defaultValue>Negotiate</defaultValue>
-			</parameter>
-			<parameter required="false" position="named" pipelineInput="false" globbing="false">
-				<maml:name>Credential</maml:name>
-				<maml:description>
-					<maml:para>Учётные данные для выполнения данной операции</maml:para>
-				</maml:description>
-				<parameterValue required="True">PSCredential</parameterValue>
-			</parameter>
 			<parameter required="true" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Filter</maml:name>
 				<maml:description>
@@ -174,6 +160,15 @@
 					<maml:para>Перечень свойств объекта printQueue для запроса из ActiveDirectory</maml:para>
 				</maml:description>
 				<parameterValue required="True">String[]</parameterValue>
+				<defaultValue>@(
+			'DistinguishedName'
+			, 'Name'
+			, 'printerName'
+			, 'printShareName'
+			, 'serverName'
+			, 'ObjectClass'
+			, 'ObjectGUID'
+		)</defaultValue>
 			</parameter>
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>ResultPageSize</maml:name>
@@ -203,6 +198,20 @@
 					<maml:para>область поиска</maml:para>
 				</maml:description>
 				<defaultValue>Subtree</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>AuthType</maml:name>
+				<maml:description>
+					<maml:para>Метод аутентификации</maml:para>
+				</maml:description>
+				<defaultValue>Negotiate</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Credential</maml:name>
+				<maml:description>
+					<maml:para>Учётные данные для выполнения данной операции</maml:para>
+				</maml:description>
+				<parameterValue required="True">PSCredential</parameterValue>
 			</parameter>
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Server</maml:name>
@@ -266,6 +275,329 @@
 	</command>
 	<command xmlns:msh="http://msh" xmlns="http://schemas.microsoft.com/maml/dev/command/2004/10">
 		<details>
+			<name>Get-ADPrintQueueContainer</name>
+			<verb>Get</verb>
+			<noun>ADPrintQueueContainer</noun>
+			<maml:description>
+				<maml:para>Возвращает контейнер AD для объекта printQueue.</maml:para>
+			</maml:description>
+			<maml:copyright>
+				<maml:para>(c) 2013 Sergey S. Betke. All rights reserved.</maml:para>
+			</maml:copyright>
+			<dev:version>0.1.0</dev:version>
+		</details>
+		<maml:description>
+			<maml:para>Get-ADPrintQueueContainer возвращает объект контейнера для указанного через InputObject объект printQueue.</maml:para>
+		</maml:description>
+		<syntax>
+			<syntaxItem>
+				<maml:name>Get-ADPrintQueueContainer</maml:name>
+				<parameter required="false" position="1" pipelineInput="true (ByValue)" globbing="false">
+					<maml:name>InputObject</maml:name>
+					<parameterValue required="false">ADObject</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Properties</maml:name>
+					<parameterValue required="false">String[]</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>DomainUtilsBase</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>ContainerClass</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>AuthType</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Credential</maml:name>
+					<parameterValue required="false">PSCredential</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+			</syntaxItem>
+		</syntax>
+		<parameters>
+			<parameter required="false" position="1" pipelineInput="true (ByValue)" globbing="false">
+				<maml:name>InputObject</maml:name>
+				<maml:description>
+					<maml:para>идентификация объекта AD (см. about_ActiveDirectory_Identity)</maml:para>
+				</maml:description>
+				<parameterValue required="True">ADObject</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Properties</maml:name>
+				<maml:description>
+					<maml:para>Перечень свойств объекта контейнера для запроса из ActiveDirectory</maml:para>
+				</maml:description>
+				<parameterValue required="True">String[]</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>DomainUtilsBase</maml:name>
+				<maml:description>
+					<maml:para>путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>( ( Get-ADDomain ).DistinguishedName )</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>ContainerClass</maml:name>
+				<maml:description>
+					<maml:para>класс контейнера, создаваемого для каждого принтера</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>container</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>AuthType</maml:name>
+				<maml:description>
+					<maml:para>Метод аутентификации</maml:para>
+				</maml:description>
+				<defaultValue>Negotiate</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Credential</maml:name>
+				<maml:description>
+					<maml:para>Учётные данные для выполнения данной операции</maml:para>
+				</maml:description>
+				<parameterValue required="True">PSCredential</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Server</maml:name>
+				<maml:description>
+					<maml:para>Контроллер домена Active Directory</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+			</parameter>
+		</parameters>
+		<inputTypes>
+			<inputType>
+				<dev:type>
+					<maml:name>Microsoft.ActiveDirectory.Management.ADObject</maml:name>
+					<maml:description>
+						<maml:para>ADObject класса printQueue, возвращаемый Get-ADPrintQueue. Если объект не указан, будут возвращены все контейнеры созданные для очередей печати.</maml:para>
+					</maml:description>
+				</dev:type>
+				<maml:description>
+					<maml:para>ADObject класса printQueue, возвращаемый Get-ADPrintQueue. Если объект не указан, будут возвращены все контейнеры созданные для очередей печати.</maml:para>
+				</maml:description>
+			</inputType>
+		</inputTypes>
+		<returnValues>
+			<returnValue>
+				<dev:type>
+					<maml:name>Microsoft.ActiveDirectory.Management.ADObject</maml:name>
+					<maml:description>
+						<maml:para>Возвращает контейнер для указанного объекта класса printQueue.</maml:para>
+					</maml:description>
+				</dev:type>
+				<maml:description>
+					<maml:para>Возвращает контейнер для указанного объекта класса printQueue.</maml:para>
+				</maml:description>
+			</returnValue>
+		</returnValues>
+		<maml:alertSet>
+			<maml:alert>
+				<maml:para>Этот командлет не работает со снимками Active Directory.</maml:para>
+			</maml:alert>
+		</maml:alertSet>
+		<examples>
+			<example>
+				<maml:title>-------------------------- ПРИМЕР 1 --------------------------</maml:title>
+				<maml:introduction>
+					<maml:paragraph>C:\PS&gt;</maml:paragraph>
+				</maml:introduction>
+				<dev:code>Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueue</dev:code>
+				<maml:remarks>
+					<maml:para>Возвращает контейнер для очереди печати 'prn001'.</maml:para>
+				</maml:remarks>
+			</example>
+		</examples>
+		<maml:relatedLinks>
+			<maml:navigationLink>
+				<maml:uri>https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueContainer</maml:uri>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>Get-ADObject</maml:linkText>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>Get-ADPrintQueue</maml:linkText>
+			</maml:navigationLink>
+		</maml:relatedLinks>
+	</command>
+	<command xmlns:msh="http://msh" xmlns="http://schemas.microsoft.com/maml/dev/command/2004/10">
+		<details>
+			<name>Install-ADPrintQueuesEnvironment</name>
+			<verb>Install</verb>
+			<noun>ADPrintQueuesEnvironment</noun>
+			<maml:description>
+				<maml:para>Создаёт корневой контейнер для контейнеров объектов printQueue.</maml:para>
+			</maml:description>
+			<maml:copyright>
+				<maml:para>(c) 2013 Sergey S. Betke. All rights reserved.</maml:para>
+			</maml:copyright>
+			<dev:version>0.1.0</dev:version>
+		</details>
+		<maml:description>
+			<maml:para>Создаёт корневой контейнер для контейнеров объектов printQueue.</maml:para>
+		</maml:description>
+		<syntax>
+			<syntaxItem>
+				<maml:name>Install-ADPrintQueuesEnvironment</maml:name>
+				<parameter required="false" position="1" pipelineInput="false" globbing="false">
+					<maml:name>DomainUtilsBase</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="2" pipelineInput="false" globbing="false">
+					<maml:name>ContainerDisplayName</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="3" pipelineInput="false" globbing="false">
+					<maml:name>ContainerClass</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="4" pipelineInput="false" globbing="false">
+					<maml:name>Description</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="5" pipelineInput="false" globbing="false">
+					<maml:name>AuthType</maml:name>
+				</parameter>
+				<parameter required="false" position="6" pipelineInput="false" globbing="false">
+					<maml:name>Credential</maml:name>
+					<parameterValue required="false">PSCredential</parameterValue>
+				</parameter>
+				<parameter required="false" position="7" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>PassThru</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>WhatIf</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Confirm</maml:name>
+				</parameter>
+			</syntaxItem>
+		</syntax>
+		<parameters>
+			<parameter required="false" position="1" pipelineInput="false" globbing="false">
+				<maml:name>DomainUtilsBase</maml:name>
+				<maml:description>
+					<maml:para>путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>"$( ( Get-ADDomain ).DistinguishedName )"</defaultValue>
+			</parameter>
+			<parameter required="false" position="2" pipelineInput="false" globbing="false">
+				<maml:name>ContainerDisplayName</maml:name>
+				<maml:description>
+					<maml:para>имя (displayName) контейнера</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>( $loc.PrintQueuesContainerName )</defaultValue>
+			</parameter>
+			<parameter required="false" position="3" pipelineInput="false" globbing="false">
+				<maml:name>ContainerClass</maml:name>
+				<maml:description>
+					<maml:para>класс контейнера, создаваемого для каждого принтера</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>container</defaultValue>
+			</parameter>
+			<parameter required="false" position="4" pipelineInput="false" globbing="false">
+				<maml:name>Description</maml:name>
+				<maml:description>
+					<maml:para>описание контейнера</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>( $loc.PrintQueuesContainerDescription )</defaultValue>
+			</parameter>
+			<parameter required="false" position="5" pipelineInput="false" globbing="false">
+				<maml:name>AuthType</maml:name>
+				<maml:description>
+					<maml:para>Метод аутентификации</maml:para>
+				</maml:description>
+				<defaultValue>Negotiate</defaultValue>
+			</parameter>
+			<parameter required="false" position="6" pipelineInput="false" globbing="false">
+				<maml:name>Credential</maml:name>
+				<maml:description>
+					<maml:para>Учётные данные для выполнения данной операции</maml:para>
+				</maml:description>
+				<parameterValue required="True">PSCredential</parameterValue>
+			</parameter>
+			<parameter required="false" position="7" pipelineInput="false" globbing="false">
+				<maml:name>Server</maml:name>
+				<maml:description>
+					<maml:para>Контроллер домена Active Directory</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>PassThru</maml:name>
+				<maml:description>
+					<maml:para>Передавать ли созданный контейнер далее по конвейеру</maml:para>
+				</maml:description>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+				<defaultValue>False</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>WhatIf</maml:name>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Confirm</maml:name>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+			</parameter>
+		</parameters>
+		<returnValues>
+			<returnValue>
+				<dev:type>
+					<maml:name>Microsoft.ActiveDirectory.Management.ADObject</maml:name>
+					<maml:description>
+						<maml:para>Возвращает корневой контейнер при ключе -PassThru.</maml:para>
+					</maml:description>
+				</dev:type>
+				<maml:description>
+					<maml:para>Возвращает корневой контейнер при ключе -PassThru.</maml:para>
+				</maml:description>
+			</returnValue>
+		</returnValues>
+		<maml:alertSet>
+			<maml:alert>
+				<maml:para>Этот командлет не работает со снимками Active Directory.</maml:para>
+			</maml:alert>
+		</maml:alertSet>
+		<examples>
+			<example>
+				<maml:title>-------------------------- ПРИМЕР 1 --------------------------</maml:title>
+				<maml:introduction>
+					<maml:paragraph>C:\PS&gt;</maml:paragraph>
+				</maml:introduction>
+				<dev:code>Install-ADPrintQueuesEnvironment</dev:code>
+				<maml:remarks>
+					<maml:para>Создаёт корневой контейнер с параметрами по умолчанию.</maml:para>
+				</maml:remarks>
+			</example>
+		</examples>
+		<maml:relatedLinks>
+			<maml:navigationLink>
+				<maml:uri>https://github.com/IT-Service/ITG.DomainUtils#Install-ADPrintQueuesEnvironment</maml:uri>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>Get-ADObject</maml:linkText>
+			</maml:navigationLink>
+		</maml:relatedLinks>
+	</command>
+	<command xmlns:msh="http://msh" xmlns="http://schemas.microsoft.com/maml/dev/command/2004/10">
+		<details>
 			<name>Test-ADPrintQueue</name>
 			<verb>Test</verb>
 			<noun>ADPrintQueue</noun>
@@ -285,35 +617,23 @@
 		<syntax>
 			<syntaxItem>
 				<maml:name>Test-ADPrintQueue</maml:name>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>AuthType</maml:name>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Credential</maml:name>
-					<parameterValue required="false">PSCredential</parameterValue>
-				</parameter>
 				<parameter required="true" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Filter</maml:name>
 					<parameterValue required="true">String</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Properties</maml:name>
-					<parameterValue required="false">String[]</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>ResultPageSize</maml:name>
-					<parameterValue required="false">Int32</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>ResultSetSize</maml:name>
-					<parameterValue required="false">Int32</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>SearchBase</maml:name>
 					<parameterValue required="false">String</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>SearchScope</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>AuthType</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Credential</maml:name>
+					<parameterValue required="false">PSCredential</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Server</maml:name>
@@ -322,35 +642,23 @@
 			</syntaxItem>
 			<syntaxItem>
 				<maml:name>Test-ADPrintQueue</maml:name>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>AuthType</maml:name>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Credential</maml:name>
-					<parameterValue required="false">PSCredential</parameterValue>
-				</parameter>
 				<parameter required="true" position="2" pipelineInput="true (ByValue)" globbing="false">
 					<maml:name>Identity</maml:name>
 					<parameterValue required="true">ADObject</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Properties</maml:name>
-					<parameterValue required="false">String[]</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>ResultPageSize</maml:name>
-					<parameterValue required="false">Int32</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>ResultSetSize</maml:name>
-					<parameterValue required="false">Int32</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>SearchBase</maml:name>
 					<parameterValue required="false">String</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>SearchScope</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>AuthType</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Credential</maml:name>
+					<parameterValue required="false">PSCredential</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Server</maml:name>
@@ -359,28 +667,9 @@
 			</syntaxItem>
 			<syntaxItem>
 				<maml:name>Test-ADPrintQueue</maml:name>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>AuthType</maml:name>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Credential</maml:name>
-					<parameterValue required="false">PSCredential</parameterValue>
-				</parameter>
 				<parameter required="true" position="named" pipelineInput="false" globbing="false">
 					<maml:name>LDAPFilter</maml:name>
 					<parameterValue required="true">String</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>Properties</maml:name>
-					<parameterValue required="false">String[]</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>ResultPageSize</maml:name>
-					<parameterValue required="false">Int32</parameterValue>
-				</parameter>
-				<parameter required="false" position="named" pipelineInput="false" globbing="false">
-					<maml:name>ResultSetSize</maml:name>
-					<parameterValue required="false">Int32</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>SearchBase</maml:name>
@@ -388,6 +677,13 @@
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>SearchScope</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>AuthType</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Credential</maml:name>
+					<parameterValue required="false">PSCredential</parameterValue>
 				</parameter>
 				<parameter required="false" position="named" pipelineInput="false" globbing="false">
 					<maml:name>Server</maml:name>
@@ -396,20 +692,6 @@
 			</syntaxItem>
 		</syntax>
 		<parameters>
-			<parameter required="false" position="named" pipelineInput="false" globbing="false">
-				<maml:name>AuthType</maml:name>
-				<maml:description>
-					<maml:para>Метод аутентификации</maml:para>
-				</maml:description>
-				<defaultValue>Negotiate</defaultValue>
-			</parameter>
-			<parameter required="false" position="named" pipelineInput="false" globbing="false">
-				<maml:name>Credential</maml:name>
-				<maml:description>
-					<maml:para>Учётные данные для выполнения данной операции</maml:para>
-				</maml:description>
-				<parameterValue required="True">PSCredential</parameterValue>
-			</parameter>
 			<parameter required="true" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Filter</maml:name>
 				<maml:description>
@@ -432,28 +714,6 @@
 				<parameterValue required="True">String</parameterValue>
 			</parameter>
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
-				<maml:name>Properties</maml:name>
-				<maml:description>
-					<maml:para>Перечень свойств объекта printQueue для запроса из ActiveDirectory</maml:para>
-				</maml:description>
-				<parameterValue required="True">String[]</parameterValue>
-			</parameter>
-			<parameter required="false" position="named" pipelineInput="false" globbing="false">
-				<maml:name>ResultPageSize</maml:name>
-				<maml:description>
-					<maml:para>Количество объектов, включаемых в одну страницу для ldap ответа</maml:para>
-				</maml:description>
-				<parameterValue required="True">Int32</parameterValue>
-				<defaultValue>256</defaultValue>
-			</parameter>
-			<parameter required="false" position="named" pipelineInput="false" globbing="false">
-				<maml:name>ResultSetSize</maml:name>
-				<maml:description>
-					<maml:para>Максимальное количество возвращаемых объектов AD</maml:para>
-				</maml:description>
-				<parameterValue required="True">Int32</parameterValue>
-			</parameter>
-			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>SearchBase</maml:name>
 				<maml:description>
 					<maml:para>путь к контейнеру AD, в котором требуется осуществить поиск</maml:para>
@@ -466,6 +726,20 @@
 					<maml:para>область поиска</maml:para>
 				</maml:description>
 				<defaultValue>Subtree</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>AuthType</maml:name>
+				<maml:description>
+					<maml:para>Метод аутентификации</maml:para>
+				</maml:description>
+				<defaultValue>Negotiate</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Credential</maml:name>
+				<maml:description>
+					<maml:para>Учётные данные для выполнения данной операции</maml:para>
+				</maml:description>
+				<parameterValue required="True">PSCredential</parameterValue>
 			</parameter>
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Server</maml:name>
