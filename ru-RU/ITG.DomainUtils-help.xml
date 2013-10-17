@@ -443,7 +443,7 @@
 			<dev:version>0.1.0</dev:version>
 		</details>
 		<maml:description>
-			<maml:para>Создаёт корневой контейнер для контейнеров объектов printQueue.</maml:para>
+			<maml:para>Создаёт корневой контейнер для контейнеров объектов printQueue. Данную функцию следует вызывать однократно для создания необходимых контейнеров и объектов.</maml:para>
 		</maml:description>
 		<syntax>
 			<syntaxItem>
