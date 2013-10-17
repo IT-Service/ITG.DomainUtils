@@ -131,6 +131,9 @@ Function Get-ADPrintQueue {
 
 	begin {
 		try {
+			foreach ( $param in 'Properties' ) {
+				$null = $PSBoundParameters.Remove( $param );
+			};
 			switch ( $PsCmdlet.ParameterSetName ) {
 				'Identity' {
 				}
@@ -153,7 +156,10 @@ Function Get-ADPrintQueue {
 				'Get-ADObject'
 				, [System.Management.Automation.CommandTypes]::Cmdlet
 			);
-			$scriptCmd = { & $wrappedCmd @PSBoundParameters };
+			$scriptCmd = { & $wrappedCmd `
+				-Properties $Properties `
+				@PSBoundParameters `
+			};
 			$steppablePipeline = $scriptCmd.GetSteppablePipeline( $myInvocation.CommandOrigin );
 			$steppablePipeline.Begin( $PSCmdlet );
 		} catch {
