@@ -966,3 +966,150 @@ Function Get-ADPrintQueueGroup {
 }
 
 New-Alias -Name Get-ADPrinterGroup -Value Get-ADPrintQueueGroup -Force;
+
+Function New-ADPrintQueueGPO {
+<#
+.Synopsis
+	Создаёт групповую политику, применяемую к пользователям указанного объекта printQueue. 
+.Description
+	New-ADPrintQueueGPO создаёт объект групповой политики для "подключения" членам
+	группы Пользователи принтера указанной
+	через InputObject очереди печати.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Outputs
+	Microsoft.GroupPolicy.Gpo
+	Возвращает созданную групповую политику при выполнении с ключом PassThru.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueGPO
+.Link
+	New-GPO
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | New-ADPrintQueueGPO
+	Создаёт объект групповой политики для очереди печати 'prn001'.
+.Example
+	Get-ADPrintQueue | New-ADPrintQueueGPO -Force
+	Создаёт групповые политики для всех обнаруженных
+	очередей печати либо обновляет их (если GPO существуют).
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $true
+		, ConfirmImpact = 'Medium'
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueGPO'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $true
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
+		} )]
+		$InputObject
+	,
+		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
+	,
+		# Метод аутентификации
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Microsoft.ActiveDirectory.Management.ADAuthType]
+		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
+	,
+		# Учётные данные для выполнения данной операции
+		[Parameter(
+			Mandatory = $false
+		)]
+		[System.Management.Automation.PSCredential]
+		$Credential
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	,
+		# Обновлять ли существующие объекты GPO
+		[Switch]
+		$Force
+	,
+		# Передавать ли созданные группы далее по конвейеру
+		[Switch]
+		$PassThru
+	)
+
+	process {
+		$ADPrintQueueParameters = $PSBoundParameters;
+		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'Force', 'PassThru' ) {
+			$null = $PSBoundParameters.Remove( $param );
+		};
+		foreach ( $param in 'InputObject', 'Force', 'PassThru', 'Confirm', 'WhatIf', 'Debug' ) {
+			$null = $ADPrintQueueParameters.Remove( $param );
+		};
+		try {
+			$PrintQueueUsersGroup =	Get-ADPrintQueueGroup `
+				-InputObject $InputObject `
+				-GroupType Users `
+				@ADPrintQueueParameters `
+			;
+			[Microsoft.GroupPolicy.Gpo] $GPO = New-GPO `
+				-Name ( [String]::Format(
+					$loc.printQueueGPOName
+					, $InputObject.PrinterName
+					, $InputObject.ServerName
+					, $InputObject.Name
+				) ) `
+				-Comment ( [String]::Format(
+					$loc.printQueueGPOComment
+					, $InputObject.PrinterName
+					, $InputObject.ServerName
+					, $InputObject.Name
+					, $InputObject.PrintShareName
+				) ) `
+				@PSBoundParameters `
+			| Set-GPPermission `
+				-PermissionLevel GpoApply `
+				-Replace `
+				-TargetType Group `
+				-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
+				@PSBoundParameters `
+			| Set-GPPermission `
+				-PermissionLevel GpoRead `
+				-TargetType Group `
+				-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
+				@PSBoundParameters `
+			| Set-GPPermission `
+				-PermissionLevel GpoRead `
+				-Replace `
+				-TargetType Group `
+				-TargetName ( ( [System.Security.Principal.SecurityIdentifier] 'S-1-5-11' ).Translate( [System.Security.Principal.NTAccount] ).Value ) `
+				@PSBoundParameters `
+			;
+			if ( $PassThru ) {
+				return $GPO;
+			};
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
+		};
+	}
+}
+
+New-Alias -Name New-ADPrinterGPO -Value New-ADPrintQueueGPO -Force;

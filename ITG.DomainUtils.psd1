@@ -61,6 +61,7 @@ ProcessorArchitecture = ''
 # Модули, которые необходимо импортировать в глобальную среду перед импортированием данного модуля
 RequiredModules = @(
 	@{ ModuleName = 'ActiveDirectory'; ModuleVersion = '1.0'; } `
+	, @{ ModuleName = 'GroupPolicy'; ModuleVersion = '1.0'; } `
 )
 
 # Сборки, которые должны быть загружены перед импортированием данного модуля

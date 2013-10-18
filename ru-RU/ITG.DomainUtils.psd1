@@ -13,4 +13,6 @@ PrintQueueAdministratorsGroup = Операторы
 PrintQueueAdministratorsGroupAccountName = prnAdmins {0}
 PrintQueueAdministratorsGroupDescription = Группа, получающая права печати на очереди печати {0} и управления всеми документами в этой очереди.
 PrintQueueAdministratorsGroupInfo = Групповая политика не будет применена, и очередь печати не будет автоматически подключена членам этой группы. \r\n\r\nСоздана и используется сценариями ITG.DomainUtils \r\n(см. https://github.com/IT-Service/ITG.DomainUtils).
+PrintQueueGPOName = itg-Принтер {0}
+PrintQueueGPOComment = Данный объект групповой политики предназначен для подключения очереди печати {0} с сервера {1} членам группы Пользователи данной очереди печати. \r\n\r\nСоздан и используется сценариями ITG.DomainUtils \r\n(см. https://github.com/IT-Service/ITG.DomainUtils).
 '@
