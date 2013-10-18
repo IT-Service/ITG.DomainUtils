@@ -59,6 +59,12 @@
 
 ### ADPrintQueueGroup
 
+#### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGroup][]
+
+Возвращает затребованные группы безопасности для указанного объекта printQueue.
+
+	Get-ADPrintQueueGroup [-InputObject] <ADObject> [-DomainUtilsBase <String>] [-GroupType <String[]>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+
 #### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueGroup][]
 
 Создаёт группы безопасности для указанного объекта printQueue.
@@ -702,6 +708,110 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 - [Get-ADPrintQueueContainer][]
 - [Get-ADObject][]
 
+#### Get-ADPrintQueueGroup
+
+[Get-ADPrintQueueGroup][] возвращает группы безопасности
+(Пользователи принтера, Операторы принтера) для указанного
+через InputObject объекта printQueue.
+
+##### ПСЕВДОНИМЫ
+
+Get-ADPrinterGroup
+
+##### СИНТАКСИС
+
+	Get-ADPrintQueueGroup [-InputObject] <ADObject> [-DomainUtilsBase <String>] [-GroupType <String[]>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+
+##### ВХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADObject][]
+ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ВЫХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADGroup][][]
+Возвращает затребованные группы безопасности.
+
+##### ПАРАМЕТРЫ
+
+- `[ADObject] InputObject`
+	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
+	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
+	* Требуется? да
+	* Позиция? 1
+	* Принимать входные данные конвейера? true (ByValue)
+	* Принимать подстановочные знаки? нет
+
+- `[String] DomainUtilsBase`
+	путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( ( Get-ADDomain ).DistinguishedName )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String[]] GroupType`
+	тип группы: Users (группа пользователей), Administrators (группа администраторов).
+	Группа пользователей получит право применения групповой политики для этой очереди печати, и право печати.
+	Группа администраторов не получит право применения GPO, но получит право печати и право управления всеми документами
+	в указанной очереди печати.
+	* Тип: [System.String][][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `Users`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[ADAuthType] AuthType`
+	Метод аутентификации
+	* Тип: [Microsoft.ActiveDirectory.Management.ADAuthType][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `Negotiate`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[PSCredential] Credential`
+	Учётные данные для выполнения данной операции
+	* Тип: [System.Management.Automation.PSCredential][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Server`
+	Контроллер домена Active Directory
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `<CommonParameters>`
+	Этот командлет поддерживает общие параметры: Verbose, Debug,
+	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+	[about_CommonParameters][].
+
+
+##### ПРИМЕРЫ
+
+1. Возвращает группу безопасности Пользователи принтера для очереди печати 'prn001'.
+
+		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueueGroup -GroupType Users
+
+##### ПРИМЕЧАНИЯ
+
+Этот командлет не работает со снимками Active Directory.
+
+##### ССЫЛКИ ПО ТЕМЕ
+
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueGroup)
+- [Get-ADObject][]
+- [Get-ADGroup][]
+- [Get-ADPrintQueue][]
+
 #### New-ADPrintQueueGroup
 
 [New-ADPrintQueueGroup][] создаёт группы безопасности
@@ -720,6 +830,11 @@ New-ADPrinterGroup
 
 - [Microsoft.ActiveDirectory.Management.ADObject][]
 ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ВЫХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADGroup][][]
+Возвращает созданные группы безопасности при выполнении с ключом PassThru.
 
 ##### ПАРАМЕТРЫ
 
@@ -803,7 +918,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 2. Создаёт группы безопасности "Пользователи принтера" для всех обнаруженных
 очередей печати.
 
-		Get-ADPrintQueue | New-ADPrintQueueGroup -GroupType User
+		Get-ADPrintQueue | New-ADPrintQueueGroup -GroupType Users
 
 ##### ПРИМЕЧАНИЯ
 
@@ -813,6 +928,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueGroup)
 - [New-ADObject][]
+- [New-ADGroup][]
 - [Get-ADPrintQueue][]
 
 #### Initialize-ADPrintQueuesEnvironment
@@ -920,13 +1036,17 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [about_ActiveDirectory_Filter]: http://technet.microsoft.com/library/hh531527.aspx 
 [about_ActiveDirectory_Identity]: http://technet.microsoft.com/library/hh531526.aspx 
 [about_CommonParameters]: http://go.microsoft.com/fwlink/?LinkID=113216 "Describes the parameters that can be used with any cmdlet."
+[Get-ADGroup]: <http://go.microsoft.com/fwlink/?linkid=219302> "Gets one or more Active Directory groups."
 [Get-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219298> "Gets one or more Active Directory objects."
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
 [Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
+[Get-ADPrintQueueGroup]: <#get-adprintqueuegroup> "Возвращает затребованные группы безопасности для указанного объекта printQueue."
 [Initialize-ADPrintQueuesEnvironment]: <#initialize-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
 [Microsoft.ActiveDirectory.Management.ADAuthType]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adauthtype.aspx> "ADAuthType Class (Microsoft.ActiveDirectory.Management)"
+[Microsoft.ActiveDirectory.Management.ADGroup]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adgroup.aspx> "ADGroup Class (Microsoft.ActiveDirectory.Management)"
 [Microsoft.ActiveDirectory.Management.ADObject]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adobject.aspx> "ADObject Class (Microsoft.ActiveDirectory.Management)"
 [Microsoft.ActiveDirectory.Management.ADSearchScope]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adsearchscope.aspx> "ADSearchScope Class (Microsoft.ActiveDirectory.Management)"
+[New-ADGroup]: <http://go.microsoft.com/fwlink/?linkid=219326> "Creates an Active Directory group."
 [New-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219323> "Creates an Active Directory object."
 [New-ADPrintQueueContainer]: <#new-adprintqueuecontainer> "Создаёт контейнер AD для указанного объекта printQueue."
 [New-ADPrintQueueGroup]: <#new-adprintqueuegroup> "Создаёт группы безопасности для указанного объекта printQueue."

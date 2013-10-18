@@ -59,6 +59,12 @@
 
 ### ADPrintQueueGroup
 
+#### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGroup][]
+
+Возвращает затребованные группы безопасности для указанного объекта printQueue.
+
+	Get-ADPrintQueueGroup [-InputObject] <ADObject> [-DomainUtilsBase <String>] [-GroupType <String[]>] [-AuthType] [-Credential <PSCredential>] [-Server <String>] <CommonParameters>
+
 #### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueGroup][]
 
 Создаёт группы безопасности для указанного объекта printQueue.
@@ -76,6 +82,7 @@
 
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
 [Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
+[Get-ADPrintQueueGroup]: <#get-adprintqueuegroup> "Возвращает затребованные группы безопасности для указанного объекта printQueue."
 [Initialize-ADPrintQueuesEnvironment]: <#initialize-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
 [New-ADPrintQueueContainer]: <#new-adprintqueuecontainer> "Создаёт контейнер AD для указанного объекта printQueue."
 [New-ADPrintQueueGroup]: <#new-adprintqueuegroup> "Создаёт группы безопасности для указанного объекта printQueue."

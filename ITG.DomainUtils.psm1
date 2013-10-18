@@ -92,6 +92,7 @@ Export-ModuleMember `
 		, Test-ADPrintQueueContainer `
 		, New-ADPrintQueueContainer `
 		, New-ADPrintQueueGroup `
+		, Get-ADPrintQueueGroup `
 	-Alias `
 		Get-ADPrinter `
 		, Test-ADPrinter `
@@ -99,4 +100,5 @@ Export-ModuleMember `
 		, Test-ADPrinterContainer `
 		, New-ADPrinterContainer `
 		, New-ADPrinterGroup `
+		, Get-ADPrinterGroup `
 ;
