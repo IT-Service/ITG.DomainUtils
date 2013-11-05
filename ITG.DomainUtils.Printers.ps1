@@ -73,6 +73,33 @@ Function Get-ADPrintQueue {
 			, 'printerName'
 			, 'printShareName'
 			, 'serverName'
+			, 'uNCName'
+			, 'driverName'
+			, 'driverVersion'
+			, 'location'
+			, 'portName'
+			, 'printAttributes'
+			, 'printBinNames'
+			, 'printCollate'
+			, 'printColor'
+			, 'printDuplexSupported'
+			, 'printFormName'
+			, 'printKeepPrintedJobs'
+			, 'printLanguage'
+			, 'printMACAddress'
+			, 'printNetworkAddress'
+			, 'printMaxCopies'
+			, 'printMaxResolutionSupported'
+			, 'printMaxXExtent'
+			, 'printMaxYExtent'
+			, 'printMinXExtent'
+			, 'printMinYExtent'
+			, 'printMediaReady'
+			, 'printMediaSupported'
+			, 'printOrientationsSupported'
+			, 'printPagesPerMinute'
+			, 'printSpooling'
+			, 'printStaplingSupported'
 			, 'ObjectClass'
 			, 'ObjectGUID'
 		)
@@ -104,20 +131,6 @@ Function Get-ADPrintQueue {
 		)]
 		[Microsoft.ActiveDirectory.Management.ADSearchScope]
 		$SearchScope = ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::Subtree )
-	,
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -267,20 +280,6 @@ Function Test-ADPrintQueue {
 		[Microsoft.ActiveDirectory.Management.ADSearchScope]
 		$SearchScope = ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::Subtree )
 	,
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
-	,
 		# Контроллер домена Active Directory
 		[Parameter(
 			Mandatory = $false
@@ -324,40 +323,12 @@ Function Initialize-ADPrintQueuesEnvironment {
 	)]
 
 	param (
-		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		# домен, для которого инициализируем конфигурацию модуля
 		[Parameter(
 			Mandatory = $false
 		)]
 		[String]
-		$DomainUtilsBase = "$( ( Get-ADDomain ).DistinguishedName )"
-	,
-		# класс контейнера, создаваемого для каждого принтера
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$ContainerClass = 'container'
-	,
-		# описание контейнера
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$Description = ( $loc.PrintQueuesContainerDescription )
-	,
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -372,16 +343,25 @@ Function Initialize-ADPrintQueuesEnvironment {
 	)
 
 	try {
-		foreach ( $param in 'DomainUtilsBase', 'ContainerClass', 'Description' ) {
-			$null = $PSBoundParameters.Remove( $param );
+		$Params = @{};
+		foreach ( $param in 'Server') {
+			if ( $PSBoundParameters.ContainsKey( $param ) ) {
+				$Params.Add( $param,  $PSBoundParameters.$param );
+			};
 		};
+		$Config = Get-DomainUtilsConfiguration `
+			-Domain $Domain `
+			@Params `
+		;
 		New-ADObject `
-			-Type $ContainerClass `
-			-Path $DomainUtilsBase `
-			-Name $loc.printQueuesContainerName `
-			-Description $Description `
+			-Type ( $Config.ContainerClass ) `
+			-Path ( Split-Path -Path $Config.DomainUtilsBase -NoQualifier ) `
+			-Name ( $Config.PrintQueuesContainerName ) `
+			-Description ( $loc.PrintQueuesContainerDescription ) `
 			-ProtectedFromAccidentalDeletion $true `
-			@PSBoundParameters `
+			-PassThru:$PassThru `
+			-Verbose:$VerbosePreference `
+			@Params `
 		;
 	} catch {
 		Write-Error `
@@ -441,33 +421,12 @@ Function Get-ADPrintQueueContainer {
 		[String[]]
 		$Properties
 	,
-		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		# домен, для которого инициализируем конфигурацию модуля
 		[Parameter(
 			Mandatory = $false
 		)]
 		[String]
-		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
-	,
-		# класс контейнера, создаваемого для каждого принтера
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$ContainerClass = 'container'
-	,
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -479,18 +438,31 @@ Function Get-ADPrintQueueContainer {
 
 	process {
 		try {
-			foreach ( $param in 'PrinterName', 'InputObject', 'DomainUtilsBase', 'ContainerClass' ) {
-				$null = $PSBoundParameters.Remove( $param );
+			$Params = @{};
+			foreach ( $param in 'Server') {
+				if ( $PSBoundParameters.ContainsKey( $param ) ) {
+					$Params.Add( $param,  $PSBoundParameters.$param );
+				};
 			};
-			$Filter = "( objectClass -eq '$ContainerClass' )";
+			$Config = Get-DomainUtilsConfiguration `
+				-Domain $Domain `
+				@Params `
+			;
+			$Filter = "( objectClass -eq '$( $Config.ContainerClass )' )";
 			if ( $InputObject ) {
-				$Filter += " -and ( name -eq '$( [String]::Format( $loc.printQueueContainerName, $InputObject.PrinterName ) )'  )";
+				$Filter += " -and ( name -eq '$( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )'  )";
 			};
 			Get-ADObject `
 				-Filter $Filter `
-				-SearchBase "CN=$( $loc.printQueuesContainerName ),$( $DomainUtilsBase )" `
+				-SearchBase ( Split-Path `
+					-Path ( Join-Path `
+						-Path ( $Config.DomainUtilsBase ) `
+						-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+					) `
+					-NoQualifier `
+				) `
 				-SearchScope ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::OneLevel ) `
-				@PSBoundParameters `
+				@Params `
 			;
 		} catch {
 			Write-Error `
@@ -543,33 +515,12 @@ Function Test-ADPrintQueueContainer {
 		} )]
 		$InputObject
 	,
-		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		# домен, для которого инициализируем конфигурацию модуля
 		[Parameter(
 			Mandatory = $false
 		)]
 		[String]
-		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
-	,
-		# класс контейнера, создаваемого для каждого принтера
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$ContainerClass = 'container'
-	,
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -641,40 +592,12 @@ Function New-ADPrintQueueContainer {
 		} )]
 		$InputObject
 	,
-		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		# домен, для которого инициализируем конфигурацию модуля
 		[Parameter(
 			Mandatory = $false
 		)]
 		[String]
-		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
-	,
-		# класс контейнера, создаваемого для каждого принтера
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$ContainerClass = 'container'
-	,
-		# описание контейнера
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$Description = ( $loc.PrintQueueContainerDescription )
-	,
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -690,13 +613,29 @@ Function New-ADPrintQueueContainer {
 
 	process {
 		try {
-			foreach ( $param in 'InputObject', 'DomainUtilsBase', 'ContainerClass', 'Description' ) {
+			$Params = @{};
+			foreach ( $param in 'Server') {
+				if ( $PSBoundParameters.ContainsKey( $param ) ) {
+					$Params.Add( $param,  $PSBoundParameters.$param );
+				};
+			};
+			$Config = Get-DomainUtilsConfiguration `
+				-Domain $Domain `
+				@Params `
+			;
+			foreach ( $param in 'InputObject' ) {
 				$null = $PSBoundParameters.Remove( $param );
 			};
 			New-ADObject `
-				-Type $ContainerClass `
-				-Path "CN=$( $loc.printQueuesContainerName ),$( $DomainUtilsBase )" `
-				-Name ( [String]::Format( $loc.printQueueContainerName, $InputObject.PrinterName ) ) `
+				-Type ( $Config.ContainerClass ) `
+				-Path ( Split-Path `
+					-Path ( Join-Path `
+						-Path ( $Config.DomainUtilsBase ) `
+						-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+					) `
+					-NoQualifier `
+				) `
+				-Name ( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) ) `
 				-Description ( [String]::Format(
 					$Description
 					, $InputObject.PrinterName
@@ -704,7 +643,9 @@ Function New-ADPrintQueueContainer {
 					, $InputObject.Name
 					, $InputObject.PrintShareName
 				) ) `
-				@PSBoundParameters `
+				@Params `
+				-Verbose:$VerbosePreference `
+				-PassThru:$PassThru `
 			;
 		} catch {
 			Write-Error `
@@ -768,13 +709,6 @@ Function New-ADPrintQueueGroup {
 		} )]
 		$InputObject
 	,
-		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
-	,
 		# тип группы: Users (группа пользователей), Administrators (группа администраторов).
 		# Группа пользователей получит право применения групповой политики для этой очереди печати, и право печати.
 		# Группа администраторов не получит право применения GPO, но получит право печати и право управления всеми документами
@@ -786,19 +720,12 @@ Function New-ADPrintQueueGroup {
 		[ValidateSet( 'Users', 'Administrators' )]
 		$GroupType = ( 'Users', 'Administrators' )
 	,
-		# Метод аутентификации
+		# домен, для которого инициализируем конфигурацию модуля
 		[Parameter(
 			Mandatory = $false
 		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
+		[String]
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -813,45 +740,69 @@ Function New-ADPrintQueueGroup {
 	)
 
 	process {
-		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'GroupType' ) {
-			$null = $PSBoundParameters.Remove( $param );
-		};
-		foreach ( $SingleGroupType in $GroupType ) {
-			try {
-				New-ADGroup `
-					-Path "CN=$( [String]::Format( $loc.printQueueContainerName, $InputObject.PrinterName ) ),CN=$( $loc.printQueuesContainerName ),$( $DomainUtilsBase )" `
-					-Name ( [String]::Format( $loc."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) ) `
-					-SamAccountName ( [String]::Format(
-						$loc."printQueue$( $SingleGroupType )GroupAccountName"
-						, $InputObject.PrinterName
-						, $InputObject.ServerName
-						, $InputObject.Name
-					) ) `
-					-GroupCategory Security `
-					-GroupScope DomainLocal `
-					-Description ( [String]::Format(
-						$loc."printQueue$( $SingleGroupType )GroupDescription"
-						, $InputObject.PrinterName
-						, $InputObject.ServerName
-						, $InputObject.Name
-						, $InputObject.PrintShareName
-					) ) `
-					-OtherAttributes @{
-						info = ( [String]::Format(
-							$loc."printQueue$( $SingleGroupType )GroupInfo"
+		try {
+			$Params = @{};
+			foreach ( $param in 'Server') {
+				if ( $PSBoundParameters.ContainsKey( $param ) ) {
+					$Params.Add( $param,  $PSBoundParameters.$param );
+				};
+			};
+			$Config = Get-DomainUtilsConfiguration `
+				-Domain $Domain `
+				@Params `
+			;
+			foreach ( $SingleGroupType in $GroupType ) {
+				try {
+					New-ADGroup `
+						-Path ( Split-Path `
+							( Join-Path `
+								-Path ( Join-Path `
+									-Path ( $Config.DomainUtilsBase ) `
+									-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+								) `
+								-ChildPath "CN=$( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )" `
+							) `
+							-NoQualifier `
+						) `
+						-Name ( [String]::Format( $Config."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) ) `
+						-SamAccountName ( [String]::Format(
+							$Config."printQueue$( $SingleGroupType )GroupAccountName"
+							, $InputObject.PrinterName
+							, $InputObject.ServerName
+							, $InputObject.Name
+						) ) `
+						-GroupCategory Security `
+						-GroupScope DomainLocal `
+						-Description ( [String]::Format(
+							$loc."printQueue$( $SingleGroupType )GroupDescription"
 							, $InputObject.PrinterName
 							, $InputObject.ServerName
 							, $InputObject.Name
 							, $InputObject.PrintShareName
-						) );
-					} `
-					@PSBoundParameters `
-				;
-			} catch {
-				Write-Error `
-					-ErrorRecord $_ `
-				;
+						) ) `
+						-OtherAttributes @{
+							info = ( [String]::Format(
+								$loc."printQueue$( $SingleGroupType )GroupInfo"
+								, $InputObject.PrinterName
+								, $InputObject.ServerName
+								, $InputObject.Name
+								, $InputObject.PrintShareName
+							) );
+						} `
+						@Params `
+						-Verbose:$VerbosePreference `
+						-PassThru:$PassThru `
+					;
+				} catch {
+					Write-Error `
+						-ErrorRecord $_ `
+					;
+				};
 			};
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
 		};
 	}
 }
@@ -904,13 +855,6 @@ Function Get-ADPrintQueueGroup {
 		} )]
 		$InputObject
 	,
-		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
-		[Parameter(
-			Mandatory = $false
-		)]
-		[String]
-		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
-	,
 		# тип группы: Users (группа пользователей), Administrators (группа администраторов).
 		# Группа пользователей получит право применения групповой политики для этой очереди печати, и право печати.
 		# Группа администраторов не получит право применения GPO, но получит право печати и право управления всеми документами
@@ -922,19 +866,12 @@ Function Get-ADPrintQueueGroup {
 		[ValidateSet( 'Users', 'Administrators' )]
 		$GroupType = 'Users'
 	,
-		# Метод аутентификации
+		# домен, для которого инициализируем конфигурацию модуля
 		[Parameter(
 			Mandatory = $false
 		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
+		[String]
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -945,22 +882,44 @@ Function Get-ADPrintQueueGroup {
 	)
 
 	process {
-		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'GroupType' ) {
-			$null = $PSBoundParameters.Remove( $param );
-		};
-		foreach ( $SingleGroupType in $GroupType ) {
-			try {
-				Get-ADGroup `
-					-SearchBase "CN=$( [String]::Format( $loc.printQueueContainerName, $InputObject.PrinterName ) ),CN=$( $loc.printQueuesContainerName ),$( $DomainUtilsBase )" `
-					-Filter "( name -eq '$( [String]::Format( $loc."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) )' )" `
-					-SearchScope OneLevel `
-					@PSBoundParameters `
-				;
-			} catch {
-				Write-Error `
-					-ErrorRecord $_ `
-				;
+		try {
+			$Params = @{};
+			foreach ( $param in 'Server') {
+				if ( $PSBoundParameters.ContainsKey( $param ) ) {
+					$Params.Add( $param,  $PSBoundParameters.$param );
+				};
 			};
+			$Config = Get-DomainUtilsConfiguration `
+				-Domain $Domain `
+				@Params `
+			;
+			foreach ( $SingleGroupType in $GroupType ) {
+				try {
+					Get-ADGroup `
+						-SearchBase ( Split-Path `
+							( Join-Path `
+								-Path ( Join-Path `
+									-Path ( $Config.DomainUtilsBase ) `
+									-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+								) `
+								-ChildPath "CN=$( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )" `
+							) `
+							-NoQualifier `
+						) `
+						-Filter "( name -eq '$( [String]::Format( $Config."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) )' )" `
+						-SearchScope OneLevel `
+						@Params `
+					;
+				} catch {
+					Write-Error `
+						-ErrorRecord $_ `
+					;
+				};
+			};
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
 		};
 	}
 }
@@ -1017,26 +976,12 @@ Function New-ADPrintQueueGPO {
 		} )]
 		$InputObject
 	,
-		# путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля
+		# домен, для которого инициализируем конфигурацию модуля
 		[Parameter(
 			Mandatory = $false
 		)]
 		[String]
-		$DomainUtilsBase = ( ( Get-ADDomain ).DistinguishedName )
-	,
-		# Метод аутентификации
-		[Parameter(
-			Mandatory = $false
-		)]
-		[Microsoft.ActiveDirectory.Management.ADAuthType]
-		$AuthType = ( [Microsoft.ActiveDirectory.Management.ADAuthType]::Negotiate )
-	,
-		# Учётные данные для выполнения данной операции
-		[Parameter(
-			Mandatory = $false
-		)]
-		[System.Management.Automation.PSCredential]
-		$Credential
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
 	,
 		# Контроллер домена Active Directory
 		[Parameter(
@@ -1049,6 +994,32 @@ Function New-ADPrintQueueGPO {
 		[Switch]
 		$Force
 	,
+		# Устанавливать ли принтер как принтер по умолчанию при отсутствии локальных принтеров
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		[ValidateSet(
+			'DefaultPrinterWhenNoLocalPrintersPresent'
+			, 'DefaultPrinter'
+			, 'DontChangeDefaultPrinter'
+		)]
+		[Alias( 'Default' )]
+		$DefaultPrinterSelectionMode = 'DefaultPrinterWhenNoLocalPrintersPresent'
+	,
+		# Ассоцирировать подключенный принтер с указанным портом
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Port = ''
+	,
+		# Устанавливать ли подключение к принтеру как постоянное. В этом случае даже при невозможности применения групповых политик при загрузке
+		# принтер будет доступен пользователям. В противном случае принтер будет подключаться только после применения групповых политик и только в случае
+		# возможности применения групповых политик.
+		[Switch]
+		$AsPersistent
+	,
 		# Передавать ли созданные группы далее по конвейеру
 		[Switch]
 		$PassThru
@@ -1056,18 +1027,31 @@ Function New-ADPrintQueueGPO {
 
 	process {
 		$ADPrintQueueParameters = $PSBoundParameters;
-		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'Force', 'PassThru' ) {
-			$null = $PSBoundParameters.Remove( $param );
+		$GPOParameters = $PSBoundParameters;
+## домен необходимы "вычилить" из domainutilsbase !!! И параметры с авторизацией убрать, не поддерживают их *-GPO командлеты, или же обрабатывать придётся их "вручную"
+## склоняюсь к тому, чтобы убрать авторизацию из всех командлет из соображений упрощения. Пользователь в состоянии весь код в сессию поместить при необходимости
+## явной авторизации
+		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'Force', 'PassThru', 'DefaultPrinterSelectionMode', 'Port', 'AsPersistent' ) {
+			$null = $GPOParameters.Remove( $param );
 		};
-		foreach ( $param in 'InputObject', 'Force', 'PassThru', 'Confirm', 'WhatIf', 'Debug' ) {
+		foreach ( $param in 'InputObject', 'Force', 'PassThru', 'Confirm', 'WhatIf', 'Debug', 'DefaultPrinterSelectionMode', 'Port', 'AsPersistent' ) {
 			$null = $ADPrintQueueParameters.Remove( $param );
 		};
+		switch ( $DefaultPrinterSelectionMode ) {
+			'DefaultPrinterWhenNoLocalPrintersPresent' {
+				$AsDefault = $true;
+				$AsDefaultAlways = $false;
+			}
+			'DefaultPrinter' {
+				$AsDefault = $true;
+				$AsDefaultAlways = $true;
+			}
+			'DontChangeDefaultPrinter' {
+				$AsDefault = $false;
+				$AsDefaultAlways = $false;
+			}
+		};
 		try {
-			$PrintQueueUsersGroup =	Get-ADPrintQueueGroup `
-				-InputObject $InputObject `
-				-GroupType Users `
-				@ADPrintQueueParameters `
-			;
 			[Microsoft.GroupPolicy.Gpo] $GPO = New-GPO `
 				-Name ( [String]::Format(
 					$loc.printQueueGPOName
@@ -1082,28 +1066,108 @@ Function New-ADPrintQueueGPO {
 					, $InputObject.Name
 					, $InputObject.PrintShareName
 				) ) `
-				@PSBoundParameters `
-			| Set-GPPermission `
-				-PermissionLevel GpoApply `
-				-Replace `
-				-TargetType Group `
-				-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
-				@PSBoundParameters `
-			| Set-GPPermission `
-				-PermissionLevel GpoRead `
-				-TargetType Group `
-				-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
-				@PSBoundParameters `
-			| Set-GPPermission `
-				-PermissionLevel GpoRead `
-				-Replace `
-				-TargetType Group `
-				-TargetName ( ( [System.Security.Principal.SecurityIdentifier] 'S-1-5-11' ).Translate( [System.Security.Principal.NTAccount] ).Value ) `
-				@PSBoundParameters `
+				@GPOParameters `
 			;
-			if ( $PassThru ) {
-				return $GPO;
+			$PrintQueueUsersGroup =	Get-ADPrintQueueGroup `
+				-InputObject $InputObject `
+				-GroupType Users `
+				@ADPrintQueueParameters `
+			;
+			try { 
+				$GPO `
+				| Set-GPPermission `
+					-PermissionLevel GpoApply `
+					-Replace `
+					-TargetType Group `
+					-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
+					@PSBoundParameters `
+				| Set-GPPermission `
+					-PermissionLevel GpoRead `
+					-TargetType Group `
+					-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
+					@PSBoundParameters `
+				| Set-GPPermission `
+					-PermissionLevel GpoRead `
+					-Replace `
+					-TargetType Group `
+					-TargetName ( ( [System.Security.Principal.SecurityIdentifier] 'S-1-5-11' ).Translate( [System.Security.Principal.NTAccount] ).Value ) `
+					@GPOParameters `
+				| Out-Null `
+				;
+				$DNSDomain = ( Get-ADDomain ).DNSRoot;
+				$GPOFilePartPath = "\\$DNSDomain\SysVOL\$DNSDomain\Policies\$( $GPO.Id.ToString( 'B' ).ToUpperInvariant() )";
+				$GPO.Computer.Enabled = $false;
+				$GPO.User.Enabled = $true;
+				$FilePartPath = "$GPOFilePartPath\User\Preferences\Printers\Printers.xml";
+				$null = [System.IO.Directory]::CreateDirectory( ( Split-Path -Path $FilePartPath -Parent ) );
+
+				[xml] $PrintersDoc = @"
+<?xml version="1.0" encoding="utf-8"?>
+<Printers clsid="{1F577D12-3D1B-471E-A1B7-060317597B9C}">
+	<SharedPrinter
+		clsid="{9A5E9697-9095-436D-A0EE-4D128FDFBCE5}"
+		name="$( $InputObject.PrinterName )"
+		status="$( [String]::Format(
+			$loc.PrintQueueGPPStatus
+			, $InputObject.PrinterName
+			, $InputObject.ServerName
+			, $InputObject.Name
+			, $InputObject.PrintShareName
+		) )"
+		image="1"
+		changed="$( Get-Date )"
+		uid="{FB9C0A41-67DC-4ED4-B305-A9B8CEB0EA73}"
+		removePolicy="1"
+		userContext="1"
+		bypassErrors="1"
+	>
+		<Properties
+			action="R"
+			comment="$( [String]::Format(
+				$loc.printQueueGPPComment
+				, $InputObject.PrinterName
+				, $InputObject.ServerName
+				, $InputObject.Name
+				, $InputObject.PrintShareName
+			) )"
+			deleteMaps="0"
+			path="$( $InputObject.uNCName )"
+			location="$( $InputObject.location )"
+			default="$( [int] $AsDefault )"
+			skipLocal="$( [int] ( -not $AsDefaultAlways ) )"
+			persistent="$( [int] [bool] $AsPersistent )"
+			deleteAll="0"
+			port="$( $Port )"
+		/>
+	</SharedPrinter>
+</Printers>
+"@
+				$Writer = [System.Xml.XmlWriter]::Create(
+					$FilePartPath `
+					, ( New-Object `
+						-TypeName System.Xml.XmlWriterSettings `
+						-Property @{
+							Indent = $true;
+							OmitXmlDeclaration = $false;
+							NamespaceHandling = [System.Xml.NamespaceHandling]::OmitDuplicates;
+							NewLineOnAttributes = $true;
+							CloseOutput = $true;
+							IndentChars = "`t";
+						} `
+					) `
+				);
+				$PrintersDoc.WriteTo( $Writer );
+				$Writer.Close();
+			} catch {
+				Remove-GPO `
+					-Guid ( $GPO.Id ) `
+					@GPOParameters `
+					-ErrorAction SilentlyContinue `
+				;
+				throw;
 			};
+
+			if ( $PassThru ) { return $GPO; };
 		} catch {
 			Write-Error `
 				-ErrorRecord $_ `

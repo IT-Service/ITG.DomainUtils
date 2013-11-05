@@ -98,6 +98,8 @@ ModuleList = @()
 FileList = `
 	'ITG.DomainUtils.psm1' `
 ,   'ITG.DomainUtils.psd1' `
+,	'ITG.DomainUtils.Configuration.psm1' `
+,	'ITG.DomainUtils.Printers.psm1' `
 ;
 
 # Личные данные, передаваемые в модуль, указанный в параметре ModuleToProcess
