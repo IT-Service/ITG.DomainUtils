@@ -455,9 +455,9 @@ Function Get-ADPrintQueueContainer {
 			Get-ADObject `
 				-Filter $Filter `
 				-SearchBase ( Split-Path `
-					-Path ( Join-Path `
-						-Path ( $Config.DomainUtilsBase ) `
-						-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+					-Path ( `
+						$Config.DomainUtilsBase `
+						| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
 					) `
 					-NoQualifier `
 				) `
@@ -623,15 +623,12 @@ Function New-ADPrintQueueContainer {
 				-Domain $Domain `
 				@Params `
 			;
-			foreach ( $param in 'InputObject' ) {
-				$null = $PSBoundParameters.Remove( $param );
-			};
 			New-ADObject `
 				-Type ( $Config.ContainerClass ) `
 				-Path ( Split-Path `
-					-Path ( Join-Path `
-						-Path ( $Config.DomainUtilsBase ) `
-						-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+					-Path ( `
+						$Config.DomainUtilsBase `
+						| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
 					) `
 					-NoQualifier `
 				) `
@@ -755,12 +752,15 @@ Function New-ADPrintQueueGroup {
 				try {
 					New-ADGroup `
 						-Path ( Split-Path `
-							( Join-Path `
-								-Path ( Join-Path `
-									-Path ( $Config.DomainUtilsBase ) `
-									-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+							-Path ( `
+								$Config.DomainUtilsBase `
+								| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
+								| Join-Path -ChildPath (
+									[String]::Format( 
+										$Config.ContainerPathTemplate, 
+										( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )
+									)
 								) `
-								-ChildPath "CN=$( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )" `
 							) `
 							-NoQualifier `
 						) `
@@ -897,12 +897,15 @@ Function Get-ADPrintQueueGroup {
 				try {
 					Get-ADGroup `
 						-SearchBase ( Split-Path `
-							( Join-Path `
-								-Path ( Join-Path `
-									-Path ( $Config.DomainUtilsBase ) `
-									-ChildPath "CN=$( $Config.PrintQueuesContainerName )" `
+							-Path ( `
+								$Config.DomainUtilsBase `
+								| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
+								| Join-Path -ChildPath (
+									[String]::Format( 
+										$Config.ContainerPathTemplate, 
+										( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )
+									)
 								) `
-								-ChildPath "CN=$( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )" `
 							) `
 							-NoQualifier `
 						) `
@@ -1115,14 +1118,9 @@ Function New-ADPrintQueueGPO {
 					).gPCFileSysPath;
 					$GPO.Computer.Enabled = $false;
 					$GPO.User.Enabled = $true;
-					$FilePartPath = `
-						$GPOFilePartPath `
-						| Join-Path -ChildPath 'User' `
-						| Join-Path -ChildPath 'Preferences' `
-						| Join-Path -ChildPath 'Printers' `
-						| Join-Path -ChildPath 'Printers.xml' `
-					;
-					$null = [System.IO.Directory]::CreateDirectory( ( Split-Path -Path $FilePartPath -Parent ) );
+					$FilePartDir = "$GPOFilePartPath\User\Preferences\Printers";
+					$FilePartPath = "$FilePartDir\Printers.xml";
+					$null = [System.IO.Directory]::CreateDirectory( $FilePartDir );
 
 					[xml] $PrintersDoc = @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -1189,18 +1187,20 @@ Function New-ADPrintQueueGPO {
 					$PrintersDoc.WriteTo( $Writer );
 					$Writer.Close();
 
-<#					New-GPLink `
-						-Guid ( $GPO.Id ) `
-						-Domain $Domain `
-						-Target ( (
-							Get-ADPrintQueueContainer `
-								-InputObject $InputObject `
-								-Domain $Domain `
-								-Server $Server `
-						).DistinguishedName ) `
-						-Server $Server `
-						-Verbose:$VerbosePreference `
-					;#>
+					if ( $Config.ContainerClass -eq 'organizationalUnit' ) {
+						$null = New-GPLink `
+							-Guid ( $GPO.Id ) `
+							-Domain $Domain `
+							-Target ( (
+								Get-ADPrintQueueContainer `
+									-InputObject $InputObject `
+									-Domain $Domain `
+									-Server $Server `
+							).DistinguishedName ) `
+							-Server $Server `
+							-Verbose:$VerbosePreference `
+						;
+					};
 				} catch {
 					Remove-GPO `
 						-Guid ( $GPO.Id ) `

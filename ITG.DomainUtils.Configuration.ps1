@@ -86,6 +86,13 @@ Function Initialize-DomainUtilsConfiguration {
 				$ConfigCache.Item( $ADDomain.DNSRoot ) = @{
 					DomainUtilsBase = Join-Path -Path "AD:$( $ADDomain.DistinguishedName )" -ChildPath $DomainUtilsBase;
 					ContainerClass = $ContainerClass;
+                    ContainerPathTemplate = & { 
+          				if ( $ContainerClass -eq 'organizationalUnit' ) {
+                            'OU={0}';
+                        } else {
+                            'CN={0}';
+                        };
+                    };
 					PrintQueuesContainerName = $loc.PrintQueuesContainerName;
 					PrintQueueContainerName = $loc.PrintQueueContainerName;
 					PrintQueueUsersGroup = $loc.PrintQueueUsersGroup;
