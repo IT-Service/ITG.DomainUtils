@@ -1020,41 +1020,42 @@ Function New-ADPrintQueueGPO {
 		[Switch]
 		$AsPersistent
 	,
-		# Передавать ли созданные группы далее по конвейеру
+		# Передавать ли созданные GPO далее по конвейеру
 		[Switch]
 		$PassThru
 	)
 
 	process {
-		$ADPrintQueueParameters = $PSBoundParameters;
-		$GPOParameters = $PSBoundParameters;
-## домен необходимы "вычилить" из domainutilsbase !!! И параметры с авторизацией убрать, не поддерживают их *-GPO командлеты, или же обрабатывать придётся их "вручную"
-## склоняюсь к тому, чтобы убрать авторизацию из всех командлет из соображений упрощения. Пользователь в состоянии весь код в сессию поместить при необходимости
-## явной авторизации
-		foreach ( $param in 'InputObject', 'DomainUtilsBase', 'Force', 'PassThru', 'DefaultPrinterSelectionMode', 'Port', 'AsPersistent' ) {
-			$null = $GPOParameters.Remove( $param );
-		};
-		foreach ( $param in 'InputObject', 'Force', 'PassThru', 'Confirm', 'WhatIf', 'Debug', 'DefaultPrinterSelectionMode', 'Port', 'AsPersistent' ) {
-			$null = $ADPrintQueueParameters.Remove( $param );
-		};
-		switch ( $DefaultPrinterSelectionMode ) {
-			'DefaultPrinterWhenNoLocalPrintersPresent' {
-				$AsDefault = $true;
-				$AsDefaultAlways = $false;
-			}
-			'DefaultPrinter' {
-				$AsDefault = $true;
-				$AsDefaultAlways = $true;
-			}
-			'DontChangeDefaultPrinter' {
-				$AsDefault = $false;
-				$AsDefaultAlways = $false;
-			}
-		};
 		try {
+			if ( -not  $Server ) {
+				$Server = ( Get-ADDomainController ).HostName;
+			};
+			$ADDomain = Get-ADDomain `
+				-Identity $Domain `
+				-Server $Server `
+			;
+			$Config = Get-DomainUtilsConfiguration `
+				-Domain $Domain `
+				-Server $Server `
+			;
+			switch ( $DefaultPrinterSelectionMode ) {
+				'DefaultPrinterWhenNoLocalPrintersPresent' {
+					$AsDefault = $true;
+					$AsDefaultAlways = $false;
+				}
+				'DefaultPrinter' {
+					$AsDefault = $true;
+					$AsDefaultAlways = $true;
+				}
+				'DontChangeDefaultPrinter' {
+					$AsDefault = $false;
+					$AsDefaultAlways = $false;
+				}
+			};
 			[Microsoft.GroupPolicy.Gpo] $GPO = New-GPO `
+				-Domain $Domain `
 				-Name ( [String]::Format(
-					$loc.printQueueGPOName
+					$Config.printQueueGPOName
 					, $InputObject.PrinterName
 					, $InputObject.ServerName
 					, $InputObject.Name
@@ -1066,42 +1067,64 @@ Function New-ADPrintQueueGPO {
 					, $InputObject.Name
 					, $InputObject.PrintShareName
 				) ) `
-				@GPOParameters `
+				-Server $Server `
+				-Verbose:$VerbosePreference `
 			;
 			$PrintQueueUsersGroup =	Get-ADPrintQueueGroup `
 				-InputObject $InputObject `
 				-GroupType Users `
-				@ADPrintQueueParameters `
+				-Server $Server `
 			;
-			try { 
-				$GPO `
-				| Set-GPPermission `
-					-PermissionLevel GpoApply `
-					-Replace `
-					-TargetType Group `
-					-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
-					@PSBoundParameters `
-				| Set-GPPermission `
-					-PermissionLevel GpoRead `
-					-TargetType Group `
-					-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
-					@PSBoundParameters `
-				| Set-GPPermission `
-					-PermissionLevel GpoRead `
-					-Replace `
-					-TargetType Group `
-					-TargetName ( ( [System.Security.Principal.SecurityIdentifier] 'S-1-5-11' ).Translate( [System.Security.Principal.NTAccount] ).Value ) `
-					@GPOParameters `
-				| Out-Null `
-				;
-				$DNSDomain = ( Get-ADDomain ).DNSRoot;
-				$GPOFilePartPath = "\\$DNSDomain\SysVOL\$DNSDomain\Policies\$( $GPO.Id.ToString( 'B' ).ToUpperInvariant() )";
-				$GPO.Computer.Enabled = $false;
-				$GPO.User.Enabled = $true;
-				$FilePartPath = "$GPOFilePartPath\User\Preferences\Printers\Printers.xml";
-				$null = [System.IO.Directory]::CreateDirectory( ( Split-Path -Path $FilePartPath -Parent ) );
+			if ( $GPO ) { 
+				try { 
+					$GPO `
+					| Set-GPPermission `
+						-PermissionLevel GpoApply `
+						-Replace `
+						-TargetType Group `
+						-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
+						-Server $Server `
+					| Set-GPPermission `
+						-PermissionLevel GpoRead `
+						-TargetType Group `
+						-TargetName ( $PrintQueueUsersGroup.SamAccountName ) `
+						-Server $Server `
+					| Set-GPPermission `
+						-PermissionLevel GpoRead `
+						-Replace `
+						-TargetType Group `
+						-TargetName ( ( [System.Security.Principal.SecurityIdentifier] 'S-1-5-11' ).Translate( [System.Security.Principal.NTAccount] ).Value ) `
+						-Server $Server `
+					| Out-Null `
+					;
+					$GPOFilePartPath = (
+						Get-ADObject `
+							-Identity ( Split-Path `
+								-Path ( 
+									"AD:$( $ADDomain.DistinguishedName )" `
+									| Join-Path -ChildPath 'CN=System' `
+									| Join-Path -ChildPath 'CN=Policies' `
+									| Join-Path -ChildPath ( "CN=$( $GPO.Id.ToString( 'B' ).ToUpperInvariant() )" ) `
+								) `
+								-NoQualifier `
+							) `
+							-Properties `
+								gPCFileSysPath `
+							-ErrorAction Stop `
+							-Server $Server `
+					).gPCFileSysPath;
+					$GPO.Computer.Enabled = $false;
+					$GPO.User.Enabled = $true;
+					$FilePartPath = `
+						$GPOFilePartPath `
+						| Join-Path -ChildPath 'User' `
+						| Join-Path -ChildPath 'Preferences' `
+						| Join-Path -ChildPath 'Printers' `
+						| Join-Path -ChildPath 'Printers.xml' `
+					;
+					$null = [System.IO.Directory]::CreateDirectory( ( Split-Path -Path $FilePartPath -Parent ) );
 
-				[xml] $PrintersDoc = @"
+					[xml] $PrintersDoc = @"
 <?xml version="1.0" encoding="utf-8"?>
 <Printers clsid="{1F577D12-3D1B-471E-A1B7-060317597B9C}">
 	<SharedPrinter
@@ -1114,8 +1137,15 @@ Function New-ADPrintQueueGPO {
 			, $InputObject.Name
 			, $InputObject.PrintShareName
 		) )"
+		desc="$( [String]::Format(
+			$loc.printQueueGPPComment
+			, $InputObject.PrinterName
+			, $InputObject.ServerName
+			, $InputObject.Name
+			, $InputObject.PrintShareName
+		) )"
 		image="1"
-		changed="$( Get-Date )"
+		changed="$( Get-Date -Format ( ( Get-Culture ).DateTimeFormat.UniversalSortableDateTimePattern ) )"
 		uid="{FB9C0A41-67DC-4ED4-B305-A9B8CEB0EA73}"
 		removePolicy="1"
 		userContext="1"
@@ -1142,32 +1172,46 @@ Function New-ADPrintQueueGPO {
 	</SharedPrinter>
 </Printers>
 "@
-				$Writer = [System.Xml.XmlWriter]::Create(
-					$FilePartPath `
-					, ( New-Object `
-						-TypeName System.Xml.XmlWriterSettings `
-						-Property @{
-							Indent = $true;
-							OmitXmlDeclaration = $false;
-							NamespaceHandling = [System.Xml.NamespaceHandling]::OmitDuplicates;
-							NewLineOnAttributes = $true;
-							CloseOutput = $true;
-							IndentChars = "`t";
-						} `
-					) `
-				);
-				$PrintersDoc.WriteTo( $Writer );
-				$Writer.Close();
-			} catch {
-				Remove-GPO `
-					-Guid ( $GPO.Id ) `
-					@GPOParameters `
-					-ErrorAction SilentlyContinue `
-				;
-				throw;
-			};
+					$Writer = [System.Xml.XmlWriter]::Create(
+						$FilePartPath `
+						, ( New-Object `
+							-TypeName System.Xml.XmlWriterSettings `
+							-Property @{
+								Indent = $true;
+								OmitXmlDeclaration = $false;
+								NamespaceHandling = [System.Xml.NamespaceHandling]::OmitDuplicates;
+								NewLineOnAttributes = $true;
+								CloseOutput = $true;
+								IndentChars = "`t";
+							} `
+						) `
+					);
+					$PrintersDoc.WriteTo( $Writer );
+					$Writer.Close();
 
-			if ( $PassThru ) { return $GPO; };
+<#					New-GPLink `
+						-Guid ( $GPO.Id ) `
+						-Domain $Domain `
+						-Target ( (
+							Get-ADPrintQueueContainer `
+								-InputObject $InputObject `
+								-Domain $Domain `
+								-Server $Server `
+						).DistinguishedName ) `
+						-Server $Server `
+						-Verbose:$VerbosePreference `
+					;#>
+				} catch {
+					Remove-GPO `
+						-Guid ( $GPO.Id ) `
+						-Server $Server `
+						-ErrorAction Continue `
+					;
+					throw;
+				};
+
+				if ( $PassThru ) { return $GPO; };
+			};
 		} catch {
 			Write-Error `
 				-ErrorRecord $_ `
