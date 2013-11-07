@@ -1,6 +1,7 @@
 ﻿# culture="ru-RU"
 
 ConvertFrom-StringData @'
+ConfigContainerDescription = Данный контейнер содержит конфигурацию модуля PowerShell ITG.DomainUtils \r\n(см. https://github.com/IT-Service/ITG.DomainUtils).
 ConfigExistsMessage = Конфигурация модуля ITG.DomainUtils уже определена для домена {0}.
 ConfigInitialization = Инициализация конфигурации модуля ITG.DomainUtils.
 ConfigExistsRA = Для переопределения конфигурации используйте ключ -Force.

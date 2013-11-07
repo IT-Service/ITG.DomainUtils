@@ -355,7 +355,7 @@ Function Initialize-ADPrintQueuesEnvironment {
 		;
 		New-ADObject `
 			-Type ( $Config.ContainerClass ) `
-			-Path ( Split-Path -Path $Config.DomainUtilsBase -NoQualifier ) `
+			-Path ( $Config.DomainUtilsBase ) `
 			-Name ( $Config.PrintQueuesContainerName ) `
 			-Description ( $loc.PrintQueuesContainerDescription ) `
 			-ProtectedFromAccidentalDeletion $true `
@@ -454,13 +454,7 @@ Function Get-ADPrintQueueContainer {
 			};
 			Get-ADObject `
 				-Filter $Filter `
-				-SearchBase ( Split-Path `
-					-Path ( `
-						$Config.DomainUtilsBase `
-						| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
-					) `
-					-NoQualifier `
-				) `
+				-SearchBase "$( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ),$( $Config.DomainUtilsBase )" `
 				-SearchScope ( [Microsoft.ActiveDirectory.Management.ADSearchScope]::OneLevel ) `
 				@Params `
 			;
@@ -625,13 +619,7 @@ Function New-ADPrintQueueContainer {
 			;
 			New-ADObject `
 				-Type ( $Config.ContainerClass ) `
-				-Path ( Split-Path `
-					-Path ( `
-						$Config.DomainUtilsBase `
-						| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
-					) `
-					-NoQualifier `
-				) `
+				-Path "$( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ),$( $Config.DomainUtilsBase )" `
 				-Name ( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) ) `
 				-Description ( [String]::Format(
 					$Description
@@ -751,18 +739,11 @@ Function New-ADPrintQueueGroup {
 			foreach ( $SingleGroupType in $GroupType ) {
 				try {
 					New-ADGroup `
-						-Path ( Split-Path `
-							-Path ( `
-								$Config.DomainUtilsBase `
-								| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
-								| Join-Path -ChildPath (
-									[String]::Format( 
-										$Config.ContainerPathTemplate, 
-										( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )
-									)
-								) `
-							) `
-							-NoQualifier `
+						-Path (
+							( Get-ADPrintQueueContainer `
+								-InputObject $InputObject `
+								@Params `
+							).DistinguishedName
 						) `
 						-Name ( [String]::Format( $Config."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) ) `
 						-SamAccountName ( [String]::Format(
@@ -896,22 +877,16 @@ Function Get-ADPrintQueueGroup {
 			foreach ( $SingleGroupType in $GroupType ) {
 				try {
 					Get-ADGroup `
-						-SearchBase ( Split-Path `
-							-Path ( `
-								$Config.DomainUtilsBase `
-								| Join-Path -ChildPath ( [String]::Format( $Config.ContainerPathTemplate, $Config.PrintQueuesContainerName ) ) `
-								| Join-Path -ChildPath (
-									[String]::Format( 
-										$Config.ContainerPathTemplate, 
-										( [String]::Format( $Config.PrintQueueContainerName, $InputObject.PrinterName ) )
-									)
-								) `
-							) `
-							-NoQualifier `
-						) `
-						-Filter "( name -eq '$( [String]::Format( $Config."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) )' )" `
-						-SearchScope OneLevel `
-						@Params `
+						-Identity "$( [String]::Format( 
+								$Config.ContainerPathTemplate, 
+								( [String]::Format( $Config."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) )
+							) ),$( 
+								( Get-ADPrintQueueContainer `
+									-InputObject $InputObject `
+									@Params `
+								).DistinguishedName
+							)" `
+ 						@Params `
 					;
 				} catch {
 					Write-Error `
@@ -1102,15 +1077,7 @@ Function New-ADPrintQueueGPO {
 					;
 					$GPOFilePartPath = (
 						Get-ADObject `
-							-Identity ( Split-Path `
-								-Path ( 
-									"AD:$( $ADDomain.DistinguishedName )" `
-									| Join-Path -ChildPath 'CN=System' `
-									| Join-Path -ChildPath 'CN=Policies' `
-									| Join-Path -ChildPath ( "CN=$( $GPO.Id.ToString( 'B' ).ToUpperInvariant() )" ) `
-								) `
-								-NoQualifier `
-							) `
+							-Identity ( "CN=$( $GPO.Id.ToString( 'B' ).ToUpperInvariant() ),CN=Policies,CN=System,$( $ADDomain.DistinguishedName )" ) `
 							-Properties `
 								gPCFileSysPath `
 							-ErrorAction Stop `

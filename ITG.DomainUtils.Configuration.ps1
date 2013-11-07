@@ -1,5 +1,9 @@
 $ConfigCache = @{};
 
+$ConfigContainerName = 'ITG DomainUtils';
+$ConfigContainerParentDN = 'CN=Optional Features,CN=Directory Service,CN=Windows NT,CN=Services,CN=Configuration';
+$ConfigContainerDN = ( ( "CN=$ConfigContainerName", $ConfigContainerParentDN | ? { $_ } ) -join ',' );
+
 Function Initialize-DomainUtilsConfiguration {
 <#
 .Synopsis
@@ -31,7 +35,7 @@ Function Initialize-DomainUtilsConfiguration {
 			Mandatory = $false
 		)]
 		[String]
-		$DomainUtilsBase = ""
+		$DomainUtilsBase
 	,
 		# класс контейнеров, используемого данным модулем
 		[Parameter(
@@ -57,21 +61,18 @@ Function Initialize-DomainUtilsConfiguration {
 	)
 
 	try {
-		$Params = @{};
-		foreach ( $param in 'Server') {
-			if ( $PSBoundParameters.ContainsKey( $param ) ) {
-				$Params.Add( $param,  $PSBoundParameters.$param );
-			};
+		if ( -not  $Server ) {
+			$Server = ( Get-ADDomainController ).HostName;
 		};
 		$ADDomain = Get-ADDomain `
 			-Identity $Domain `
-			@Params `
+			-Server $Server `
 		;
 		if ( 
 			(
 				Test-DomainUtilsConfiguration `
 					-Domain $Domain `
-					@Params `
+					-Server $Server `
 			) `
 			-and -not $Force 
 		) {
@@ -83,28 +84,54 @@ Function Initialize-DomainUtilsConfiguration {
 				-RecommendedAction ( [String]::Format( $loc.ConfigExistsRA, $ADDomain.DNSRoot ) ) `
 			;
 		} else {
-			if ( $PSCmdlet.ShouldProcess( $ADDomain.DNSRoot ) ) {
-				Write-Verbose `
-					-Message ( [String]::Format( $loc.ConfigInitialization, $ADDomain.DNSRoot ) ) `
+			Write-Verbose `
+				-Message ( [String]::Format( $loc.ConfigInitialization, $ADDomain.DNSRoot ) ) `
+			;
+			if ( 
+				Test-DomainUtilsConfiguration `
+					-Domain $Domain `
+					-Server $Server `
+			) {
+				$ConfigADObject = Get-ADObject `
+					-Identity ( ( $ConfigContainerDN, $ADDomain.DistinguishedName | ? { $_ } ) -join ',' ) `
+					-Server $Server `
+					-Properties 'msDS-ObjectReference', 'msDS-Settings' `
 				;
-				$ConfigCache.Item( $ADDomain.DNSRoot ) = @{
-					DomainUtilsBase = Join-Path -Path "AD:$( $ADDomain.DistinguishedName )" -ChildPath $DomainUtilsBase;
-					ContainerClass = $ContainerClass;
-					ContainerPathTemplate = & { 
-		  				if ( $ContainerClass -eq 'organizationalUnit' ) {
-							'OU={0}';
-						} else {
-							'CN={0}';
-						};
-					};
-					PrintQueuesContainerName = $loc.PrintQueuesContainerName;
-					PrintQueueContainerName = $loc.PrintQueueContainerName;
-					PrintQueueUsersGroup = $loc.PrintQueueUsersGroup;
-					PrintQueueUsersGroupAccountName = $loc.PrintQueueUsersGroupAccountName;
-					PrintQueueAdministratorsGroup = $loc.PrintQueueAdministratorsGroup;
-					PrintQueueAdministratorsGroupAccountName = $loc.PrintQueueAdministratorsGroupAccountName;
-					PrintQueueGPOName = $loc.PrintQueueGPOName;
-				};
+			};
+			if ( -not $ConfigADObject ) {
+				$ConfigADObject = New-ADObject `
+					-Type 'msDS-App-Configuration' `
+					-Path ( ( $ConfigContainerParentDN, $ADDomain.DistinguishedName | ? { $_ } ) -join ',' ) `
+					-Name $ConfigContainerName `
+					-ProtectedFromAccidentalDeletion $false `
+					-PassThru `
+					-Verbose:$VerbosePreference `
+					-Server $Server `
+				;
+			};
+			if ( $ConfigADObject ) {
+				$ConfigADObject.'msDS-ObjectReference' = `
+					( ( $DomainUtilsBase, $ADDomain.DistinguishedName | ? { $_ } ) -join ',' ) `
+				;
+				$ConfigADObject.'msDS-Settings' = `
+					"ContainerClass=$ContainerClass" `
+					, "PrintQueuesContainerName=$( $loc.PrintQueuesContainerName )" `
+					, "PrintQueueContainerName=$( $loc.PrintQueueContainerName )" `
+					, "PrintQueueUsersGroup=$( $loc.PrintQueueUsersGroup )" `
+					, "PrintQueueUsersGroupAccountName=$( $loc.PrintQueueUsersGroupAccountName )" `
+					, "PrintQueueAdministratorsGroup=$( $loc.PrintQueueAdministratorsGroup )" `
+					, "PrintQueueAdministratorsGroupAccountName=$( $loc.PrintQueueAdministratorsGroupAccountName )" `
+					, "PrintQueueGPOName=$( $loc.PrintQueueGPOName )" `
+				;
+				Set-ADObject `
+					-Instance $ConfigADObject `
+					-Verbose:$VerbosePreference `
+					-Server $Server `
+				;
+				$null = Get-DomainUtilsConfiguration `
+					-Domain $Domain `
+					-Server $Server `
+				;
 			};
 		};
 	} catch {
@@ -157,7 +184,8 @@ Function Test-DomainUtilsConfiguration {
 			-Identity $Domain `
 			@Params `
 		;
-		return $ConfigCache.ContainsKey( $ADDomain.DNSRoot );
+		if ( $ConfigCache.ContainsKey( $ADDomain.DNSRoot ) ) { return $true; };
+		return ( Test-Path -Path "AD:$( ( $ConfigContainerDN, $ADDomain.DistinguishedName | ? { $_ } ) -join ',' )" );
 	} catch {
 		Write-Error `
 			-ErrorRecord $_ `
@@ -200,32 +228,52 @@ Function Get-DomainUtilsConfiguration {
 	)
 
 	try {
-		$Params = @{};
-		foreach ( $param in 'Server') {
-			if ( $PSBoundParameters.ContainsKey( $param ) ) {
-				$Params.Add( $param,  $PSBoundParameters.$param );
-			};
+		if ( -not  $Server ) {
+			$Server = ( Get-ADDomainController ).HostName;
 		};
 		$ADDomain = Get-ADDomain `
 			-Identity $Domain `
-			@Params `
+			-Server $Server `
 		;
-		if ( 
-			-not (
-				Test-DomainUtilsConfiguration `
-					-Domain $Domain `
-					@Params `
-			) `
-		) {
-			Write-Error `
-				-Message ( [String]::Format( $loc.ConfigDoesntExistsMessage, $ADDomain.DNSRoot ) ) `
-				-Category NotInstalled `
-				-CategoryActivity ( [String]::Format( $loc.ConfigRetriving, $ADDomain.DNSRoot ) ) `
-				-CategoryReason ( [String]::Format( $loc.ConfigDoesntExistsMessage, $ADDomain.DNSRoot ) ) `
-				-RecommendedAction ( [String]::Format( $loc.ConfigDoesntExistsRA, $ADDomain.DNSRoot ) ) `
-			;
-		} else {
+		if ( $ConfigCache.ContainsKey( $ADDomain.DNSRoot ) ) {
 			return $ConfigCache.Item( $ADDomain.DNSRoot );
+		} else {
+			if ( 
+				-not (
+					Test-DomainUtilsConfiguration `
+						-Domain $Domain `
+						-Server $Server `
+				) `
+			) {
+				Write-Error `
+					-Message ( [String]::Format( $loc.ConfigDoesntExistsMessage, $ADDomain.DNSRoot ) ) `
+					-Category NotInstalled `
+					-CategoryActivity ( [String]::Format( $loc.ConfigRetriving, $ADDomain.DNSRoot ) ) `
+					-CategoryReason ( [String]::Format( $loc.ConfigDoesntExistsMessage, $ADDomain.DNSRoot ) ) `
+					-RecommendedAction ( [String]::Format( $loc.ConfigDoesntExistsRA, $ADDomain.DNSRoot ) ) `
+				;
+			} else {
+				$ConfigADObject = Get-ADObject `
+					-Identity ( ( $ConfigContainerDN, $ADDomain.DistinguishedName | ? { $_ } ) -join ',' ) `
+					-Server $Server `
+					-Properties 'msDS-ObjectReference', 'msDS-Settings' `
+				;
+				$ConfigCache.Item( $ADDomain.DNSRoot ) = @{
+					DomainUtilsBase = $ConfigADObject.'msDS-ObjectReference'[0];
+				};
+				$ConfigADObject.'msDS-Settings' `
+				| % {
+					if ( $_ -match '^(?<Param>\w+)=(?<Value>.*)$' ) {
+						$ConfigCache.Item( $ADDomain.DNSRoot ).( $Matches[ 'Param' ] ) = $Matches[ 'Value' ];
+					};
+				};
+		  		if ( $ConfigCache.Item( $ADDomain.DNSRoot ).ContainerClass -eq 'organizationalUnit' ) {
+					$ConfigCache.Item( $ADDomain.DNSRoot ).ContainerPathTemplate = 'OU={0}';
+				} else {
+					$ConfigCache.Item( $ADDomain.DNSRoot ).ContainerPathTemplate = 'CN={0}';
+				};
+				return $ConfigCache.Item( $ADDomain.DNSRoot );
+			};
 		};
 	} catch {
 		Write-Error `
