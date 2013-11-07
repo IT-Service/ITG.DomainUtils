@@ -321,7 +321,7 @@
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>домен</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
@@ -445,7 +445,7 @@
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>домен</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
@@ -622,7 +622,7 @@
 			<parameter required="false" position="1" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>домен, в котором инициализируем окружение для очередей печати</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
@@ -855,7 +855,7 @@
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>домен</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
@@ -1026,7 +1026,7 @@
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>домен</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
@@ -1216,7 +1216,7 @@
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>домен</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
@@ -1522,7 +1522,7 @@
 			<parameter required="false" position="named" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>домен</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>

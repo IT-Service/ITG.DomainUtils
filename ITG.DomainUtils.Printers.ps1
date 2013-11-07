@@ -323,7 +323,7 @@ Function Initialize-ADPrintQueuesEnvironment {
 	)]
 
 	param (
-		# домен, для которого инициализируем конфигурацию модуля
+		# домен, в котором инициализируем окружение для очередей печати
 		[Parameter(
 			Mandatory = $false
 		)]
@@ -421,7 +421,7 @@ Function Get-ADPrintQueueContainer {
 		[String[]]
 		$Properties
 	,
-		# домен, для которого инициализируем конфигурацию модуля
+		# домен
 		[Parameter(
 			Mandatory = $false
 		)]
@@ -515,7 +515,7 @@ Function Test-ADPrintQueueContainer {
 		} )]
 		$InputObject
 	,
-		# домен, для которого инициализируем конфигурацию модуля
+		# домен
 		[Parameter(
 			Mandatory = $false
 		)]
@@ -592,7 +592,7 @@ Function New-ADPrintQueueContainer {
 		} )]
 		$InputObject
 	,
-		# домен, для которого инициализируем конфигурацию модуля
+		# домен
 		[Parameter(
 			Mandatory = $false
 		)]
@@ -717,7 +717,7 @@ Function New-ADPrintQueueGroup {
 		[ValidateSet( 'Users', 'Administrators' )]
 		$GroupType = ( 'Users', 'Administrators' )
 	,
-		# домен, для которого инициализируем конфигурацию модуля
+		# домен
 		[Parameter(
 			Mandatory = $false
 		)]
@@ -866,7 +866,7 @@ Function Get-ADPrintQueueGroup {
 		[ValidateSet( 'Users', 'Administrators' )]
 		$GroupType = 'Users'
 	,
-		# домен, для которого инициализируем конфигурацию модуля
+		# домен
 		[Parameter(
 			Mandatory = $false
 		)]
@@ -979,7 +979,7 @@ Function New-ADPrintQueueGPO {
 		} )]
 		$InputObject
 	,
-		# домен, для которого инициализируем конфигурацию модуля
+		# домен
 		[Parameter(
 			Mandatory = $false
 		)]
