@@ -706,7 +706,7 @@
 		<maml:description>
 			<maml:para>Инициализирует конфигурацию модуля. Конфигурация модуля сохраняется в Active Directory, полный путь для домена csm.nov.ru будет `CN=ITG DomainUtils,CN=Optional Features,CN=Directory Service,CN=Windows NT,CN=Services,CN=Configuration,DC=csm,DC=nov,DC=ru`.</maml:para>
 			<maml:para>Конфигурация сохраняется в AD (и загружается из AD) по ряду причин. В частности, модуль поддерживает локализацию и поддерживает различные классы контейнеров. Но с момента начала его применения всеми администраторами домена должна использоваться одна и та же конфигурация модуля, в частности - типы контейнеров, корневой контейнер для размещения создаваемых вспомогательных групп, и так далее.</maml:para>
-			<maml:para>В случае наличия конфигурации в AD её можно принудительно перезаписать, используя ключ -Force, однако этот шаг не приведёт к фактическому изменению типов контейнеров, их местоположения, аттрибутов созданных групп. Поэтому пользоваться этой возможностью следует с особой осторожностью.</maml:para>
+			<maml:para>В случае наличия конфигурации в AD её можно принудительно перезаписать, используя ключ `-Force`, однако этот шаг не приведёт к фактическому изменению типов контейнеров, их местоположения, аттрибутов созданных групп. Поэтому пользоваться этой возможностью следует с особой осторожностью.</maml:para>
 		</maml:description>
 		<syntax>
 			<syntaxItem>
@@ -742,7 +742,7 @@
 			<parameter required="false" position="1" pipelineInput="false" globbing="false">
 				<maml:name>Domain</maml:name>
 				<maml:description>
-					<maml:para>домен, для которого инициализируем конфигурацию модуля</maml:para>
+					<maml:para>Домен, для которого инициализируем конфигурацию модуля. Если не указан - домен пользователя, от имени которого запущен сценарий.</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
@@ -750,14 +750,15 @@
 			<parameter required="false" position="2" pipelineInput="false" globbing="false">
 				<maml:name>DomainUtilsBase</maml:name>
 				<maml:description>
-					<maml:para>путь к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля</maml:para>
+					<maml:para>Путь (DN) к контейнеру AD, в котором расположены все контейнеры, используемые утилитами данного модуля. Указывается без DN домена. Например, для `CN=ITG,DC=csm,DC=nov,DC=ru` следует указать `CN=ITG`.</maml:para>
+					<maml:para>По умолчанию в качестве корневого контейнера используется корневой контейнер домена.</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 			</parameter>
 			<parameter required="false" position="3" pipelineInput="false" globbing="false">
 				<maml:name>ContainerClass</maml:name>
 				<maml:description>
-					<maml:para>класс контейнеров, используемого данным модулем</maml:para>
+					<maml:para>Класс контейнеров, используемых данным модулем</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 				<defaultValue>container</defaultValue>
@@ -765,7 +766,7 @@
 			<parameter required="false" position="4" pipelineInput="false" globbing="false">
 				<maml:name>Server</maml:name>
 				<maml:description>
-					<maml:para>Контроллер домена Active Directory</maml:para>
+					<maml:para>Контроллер домена Active Directory. Если не указан явно - используется эмулятор роли PDC в указанном домене.</maml:para>
 				</maml:description>
 				<parameterValue required="True">String</parameterValue>
 			</parameter>
