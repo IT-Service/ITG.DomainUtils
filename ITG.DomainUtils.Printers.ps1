@@ -877,10 +877,7 @@ Function Get-ADPrintQueueGroup {
 			foreach ( $SingleGroupType in $GroupType ) {
 				try {
 					Get-ADGroup `
-						-Identity "$( [String]::Format( 
-								$Config.ContainerPathTemplate, 
-								( [String]::Format( $Config."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) )
-							) ),$( 
+						-Identity "CN=$( [String]::Format( $Config."printQueue$( $SingleGroupType )Group", $InputObject.PrinterName ) ),$( 
 								( Get-ADPrintQueueContainer `
 									-InputObject $InputObject `
 									@Params `
@@ -1051,6 +1048,7 @@ Function New-ADPrintQueueGPO {
 			$PrintQueueUsersGroup =	Get-ADPrintQueueGroup `
 				-InputObject $InputObject `
 				-GroupType Users `
+				-Domain $Domain `
 				-Server $Server `
 			;
 			if ( $GPO ) { 
@@ -1188,3 +1186,101 @@ Function New-ADPrintQueueGPO {
 }
 
 New-Alias -Name New-ADPrinterGPO -Value New-ADPrintQueueGPO -Force;
+
+Function Get-ADPrintQueueGPO {
+<#
+.Synopsis
+	Возвращает объект групповой политики, применяемой к пользователям указанного объекта printQueue. 
+.Description
+	Возвращает объект групповой политики, созданный для "подключения" членам
+	группы Пользователи принтера указанной
+	через InputObject очереди печати.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Outputs
+	Microsoft.GroupPolicy.Gpo
+	Возвращает объект групповой политики для указанной очереди печати
+	либо генерирует ошибку.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueGPO
+.Link
+	Get-ADPrintQueueGPO
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueueGPO
+	Возвращает объект групповой политики для очереди печати 'prn001'.
+.Example
+	Get-ADPrintQueue | Get-ADPrintQueueGPO | Remove-GPO -Verbose
+	Удаляем групповые политики для всех обнаруженных
+	очередей печати.
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $false
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueGPO'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $true
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
+		} )]
+		$InputObject
+	,
+		# домен
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	)
+
+	process {
+		try {
+			if ( -not  $Server ) {
+				$Server = ( Get-ADDomainController ).HostName;
+			};
+			$ADDomain = Get-ADDomain `
+				-Identity $Domain `
+				-Server $Server `
+			;
+			$Config = Get-DomainUtilsConfiguration `
+				-Domain $Domain `
+				-Server $Server `
+			;
+			return ( Get-GPO `
+				-Domain $Domain `
+				-Name ( [String]::Format(
+					$Config.printQueueGPOName
+					, $InputObject.PrinterName
+					, $InputObject.ServerName
+					, $InputObject.Name
+				) ) `
+				-Server $Server `
+			);
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
+		};
+	}
+}
+
+New-Alias -Name Get-ADPrinterGPO -Value Get-ADPrintQueueGPO -Force;

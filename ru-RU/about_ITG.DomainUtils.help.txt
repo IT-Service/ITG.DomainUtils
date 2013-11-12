@@ -59,6 +59,12 @@
 
 ### ADPrintQueueGPO
 
+#### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGPO][]
+
+Возвращает объект групповой политики, применяемой к пользователям указанного объекта printQueue.
+
+	Get-ADPrintQueueGPO [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] <CommonParameters>
+
 #### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueGPO][]
 
 Создаёт групповую политику, применяемую к пользователям указанного объекта printQueue.
@@ -110,6 +116,7 @@
 
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
 [Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
+[Get-ADPrintQueueGPO]: <#get-adprintqueuegpo> "Возвращает объект групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Get-ADPrintQueueGroup]: <#get-adprintqueuegroup> "Возвращает затребованные группы безопасности для указанного объекта printQueue."
 [Get-DomainUtilsConfiguration]: <#get-domainutilsconfiguration> "Получаем объект, содержащий конфигурацию модуля для указанного домена."
 [Initialize-ADPrintQueuesEnvironment]: <#initialize-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."

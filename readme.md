@@ -59,6 +59,12 @@
 
 ### ADPrintQueueGPO
 
+#### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGPO][]
+
+Возвращает объект групповой политики, применяемой к пользователям указанного объекта printQueue.
+
+	Get-ADPrintQueueGPO [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] <CommonParameters>
+
 #### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueGPO][]
 
 Создаёт групповую политику, применяемую к пользователям указанного объекта printQueue.
@@ -642,6 +648,86 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 - [Get-ADPrintQueueContainer][]
 - [Get-ADObject][]
 
+#### Get-ADPrintQueueGPO
+
+Возвращает объект групповой политики, созданный для "подключения" членам
+группы Пользователи принтера указанной
+через InputObject очереди печати.
+
+##### ПСЕВДОНИМЫ
+
+Get-ADPrinterGPO
+
+##### СИНТАКСИС
+
+	Get-ADPrintQueueGPO [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] <CommonParameters>
+
+##### ВХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADObject][]
+ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ВЫХОДНЫЕ ДАННЫЕ
+
+- Microsoft.GroupPolicy.Gpo
+Возвращает объект групповой политики для указанной очереди печати
+либо генерирует ошибку.
+
+##### ПАРАМЕТРЫ
+
+- `[ADObject] InputObject`
+	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
+	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
+	* Требуется? да
+	* Позиция? 1
+	* Принимать входные данные конвейера? true (ByValue)
+	* Принимать подстановочные знаки? нет
+
+- `[String] Domain`
+	домен
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( ( Get-ADDomain ).DNSRoot )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Server`
+	Контроллер домена Active Directory
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `<CommonParameters>`
+	Этот командлет поддерживает общие параметры: Verbose, Debug,
+	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+	[about_CommonParameters][].
+
+
+##### ПРИМЕРЫ
+
+1. Возвращает объект групповой политики для очереди печати 'prn001'.
+
+		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueueGPO
+
+2. Удаляем групповые политики для всех обнаруженных
+очередей печати.
+
+		Get-ADPrintQueue | Get-ADPrintQueueGPO | Remove-GPO -Verbose
+
+##### ПРИМЕЧАНИЯ
+
+Этот командлет не работает со снимками Active Directory.
+
+##### ССЫЛКИ ПО ТЕМЕ
+
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueGPO)
+- [Get-ADPrintQueueGPO][]
+- [Get-ADPrintQueue][]
+
 #### New-ADPrintQueueGPO
 
 [New-ADPrintQueueGPO][] создаёт объект групповой политики для "подключения" членам
@@ -1195,6 +1281,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [Get-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219298> "Gets one or more Active Directory objects."
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
 [Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
+[Get-ADPrintQueueGPO]: <#get-adprintqueuegpo> "Возвращает объект групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Get-ADPrintQueueGroup]: <#get-adprintqueuegroup> "Возвращает затребованные группы безопасности для указанного объекта printQueue."
 [Get-DomainUtilsConfiguration]: <#get-domainutilsconfiguration> "Получаем объект, содержащий конфигурацию модуля для указанного домена."
 [Initialize-ADPrintQueuesEnvironment]: <#initialize-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
