@@ -99,6 +99,7 @@ Export-ModuleMember `
 		, Get-ADPrintQueueGroup `
 		, New-ADPrintQueueGPO `
 		, Get-ADPrintQueueGPO `
+		, Test-ADPrintQueueGPO `
 	-Alias `
 		Get-ADPrinter `
 		, Test-ADPrinter `
@@ -109,4 +110,5 @@ Export-ModuleMember `
 		, Get-ADPrinterGroup `
 		, New-ADPrinterGPO `
 		, Get-ADPrinterGPO `
+		, Test-ADPrinterGPO `
 ;

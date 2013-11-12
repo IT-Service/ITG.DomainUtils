@@ -1284,3 +1284,86 @@ Function Get-ADPrintQueueGPO {
 }
 
 New-Alias -Name Get-ADPrinterGPO -Value Get-ADPrintQueueGPO -Force;
+
+Function Test-ADPrintQueueGPO {
+<#
+.Synopsis
+	Проверяет наличие объекта групповой политики, применяемой к пользователям указанного объекта printQueue. 
+.Description
+	Возвращает `$true` или `$false`, указывая наличие либо отсутствие объекта групповой политики для указанной
+	через InputObject очереди печати.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Outputs
+	Bool
+	Подтверждает или опровергает факт наличия объекта групповой политики для указанной очереди печати.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueGPO
+.Link
+	Test-ADPrintQueueGPO
+.Link
+	Get-ADPrintQueueGPO
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue -Filter {name -eq 'prn001'} | Test-ADPrintQueueGPO
+	Проверяем наличие GPO для очереди печати 'prn001'.
+.Example
+	Get-ADPrintQueue | ? { -not ( $_ | Test-ADPrintQueueGPO ) } | New-ADPrintQueueGPO -Verbose
+	Создаём недостающие объекты политик.
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $false
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueGPO'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $true
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
+		} )]
+		$InputObject
+	,
+		# домен
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	)
+
+	process {
+		try {
+			foreach ( $param in 'ErrorAction' ) {
+				$null = $PSBoundParameters.Remove( $param );
+			};
+			return [bool] ( Get-ADPrintQueueGPO `
+				@PSBoundParameters `
+				-ErrorAction SilentlyContinue `
+			).Count;
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
+		};
+	}
+}
+
+New-Alias -Name Test-ADPrinterGPO -Value Test-ADPrintQueueGPO -Force;

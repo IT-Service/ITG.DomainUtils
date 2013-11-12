@@ -71,6 +71,12 @@
 
 	New-ADPrintQueueGPO [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-Force] [-DefaultPrinterSelectionMode <String>] [-Port <String>] [-AsPersistent] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
 
+#### КРАТКОЕ ОПИСАНИЕ [Test-ADPrintQueueGPO][]
+
+Проверяет наличие объекта групповой политики, применяемой к пользователям указанного объекта printQueue.
+
+	Test-ADPrintQueueGPO [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] <CommonParameters>
+
 ### ADPrintQueueGroup
 
 #### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGroup][]
@@ -845,6 +851,84 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 - [New-GPO][]
 - [Get-ADPrintQueue][]
 
+#### Test-ADPrintQueueGPO
+
+Возвращает `$true` или `$false`, указывая наличие либо отсутствие объекта групповой политики для указанной
+через InputObject очереди печати.
+
+##### ПСЕВДОНИМЫ
+
+Test-ADPrinterGPO
+
+##### СИНТАКСИС
+
+	Test-ADPrintQueueGPO [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] <CommonParameters>
+
+##### ВХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADObject][]
+ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ВЫХОДНЫЕ ДАННЫЕ
+
+- Bool
+Подтверждает или опровергает факт наличия объекта групповой политики для указанной очереди печати.
+
+##### ПАРАМЕТРЫ
+
+- `[ADObject] InputObject`
+	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
+	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
+	* Требуется? да
+	* Позиция? 1
+	* Принимать входные данные конвейера? true (ByValue)
+	* Принимать подстановочные знаки? нет
+
+- `[String] Domain`
+	домен
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( ( Get-ADDomain ).DNSRoot )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Server`
+	Контроллер домена Active Directory
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `<CommonParameters>`
+	Этот командлет поддерживает общие параметры: Verbose, Debug,
+	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+	[about_CommonParameters][].
+
+
+##### ПРИМЕРЫ
+
+1. Проверяем наличие GPO для очереди печати 'prn001'.
+
+		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Test-ADPrintQueueGPO
+
+2. Создаём недостающие объекты политик.
+
+		Get-ADPrintQueue | ? { -not ( $_ | Test-ADPrintQueueGPO ) } | New-ADPrintQueueGPO -Verbose
+
+##### ПРИМЕЧАНИЯ
+
+Этот командлет не работает со снимками Active Directory.
+
+##### ССЫЛКИ ПО ТЕМЕ
+
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueGPO)
+- [Test-ADPrintQueueGPO][]
+- [Get-ADPrintQueueGPO][]
+- [Get-ADPrintQueue][]
+
 #### Get-ADPrintQueueGroup
 
 [Get-ADPrintQueueGroup][] возвращает группы безопасности
@@ -1299,6 +1383,7 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [System.String]: <http://msdn.microsoft.com/ru-ru/library/system.string.aspx> "String Class (System)"
 [Test-ADPrintQueue]: <#test-adprintqueue> "Определяет существует ли объект AD с классом printQueue с указанными фильтрами."
 [Test-ADPrintQueueContainer]: <#test-adprintqueuecontainer> "Проверяет наличие контейнера AD для указанного объекта printQueue."
+[Test-ADPrintQueueGPO]: <#test-adprintqueuegpo> "Проверяет наличие объекта групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Test-DomainUtilsConfiguration]: <#test-domainutilsconfiguration> "Проверяем наличие конфигурации модуля для указанного домена."
 
 ---------------------------------------
