@@ -37,6 +37,20 @@
 
 	Test-ADPrintQueue -LDAPFilter <String> [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
+### ADPrintQueueEnvironment
+
+#### КРАТКОЕ ОПИСАНИЕ [Remove-ADPrintQueueEnvironment][]
+
+Удаляет группы безопасности и объект GPO для указанной очереди печати.
+
+	Remove-ADPrintQueueEnvironment [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-WhatIf] [-Confirm] <CommonParameters>
+
+#### КРАТКОЕ ОПИСАНИЕ [Update-ADPrintQueueEnvironment][]
+
+Создаёт (при отсутствии) группы безопасности и объект GPO.
+
+	Update-ADPrintQueueEnvironment [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-DefaultPrinterSelectionMode <String>] [-Port <String>] [-AsPersistent] [-WhatIf] [-Confirm] <CommonParameters>
+
 ### ADPrintQueueGPO
 
 #### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGPO][]
@@ -382,6 +396,181 @@ ADObject принимаемый параметром `Identity`.
 ##### ССЫЛКИ ПО ТЕМЕ
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueue)
+- [Get-ADPrintQueue][]
+
+#### Remove-ADPrintQueueEnvironment
+
+Удаляет группы безопасности и объект GPO для указанной
+через InputObject очереди печати.
+
+##### ПСЕВДОНИМЫ
+
+Remove-ADPrinterEnvironment
+
+##### СИНТАКСИС
+
+	Remove-ADPrintQueueEnvironment [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-WhatIf] [-Confirm] <CommonParameters>
+
+##### ВХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADObject][]
+ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ПАРАМЕТРЫ
+
+- `[ADObject] InputObject`
+	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
+	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
+	* Требуется? да
+	* Позиция? 1
+	* Принимать входные данные конвейера? true (ByValue)
+	* Принимать подстановочные знаки? нет
+
+- `[String] Domain`
+	домен
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( ( Get-ADDomain ).DNSRoot )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Server`
+	Контроллер домена Active Directory
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[SwitchParameter] WhatIf`
+	* Псевдонимы: wi
+
+- `[SwitchParameter] Confirm`
+	* Псевдонимы: cf
+
+- `<CommonParameters>`
+	Этот командлет поддерживает общие параметры: Verbose, Debug,
+	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+	[about_CommonParameters][].
+
+
+##### ПРИМЕРЫ
+
+1. Удаляем группы безопасности и объекты GPO для всех
+очередей печати.
+
+		Get-ADPrintQueue | Remove-ADPrintQueueEnvironment -Verbose
+
+##### ПРИМЕЧАНИЯ
+
+Этот командлет не работает со снимками Active Directory.
+
+##### ССЫЛКИ ПО ТЕМЕ
+
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Remove-ADPrintQueueEnvironment)
+- [Update-ADPrintQueueEnvironment][]
+- [Get-ADPrintQueue][]
+
+#### Update-ADPrintQueueEnvironment
+
+Создаёт (при отсутствии) группы безопасности и объект GPO для указанной
+через InputObject очереди печати.
+
+##### ПСЕВДОНИМЫ
+
+Update-ADPrinterEnvironment
+
+##### СИНТАКСИС
+
+	Update-ADPrintQueueEnvironment [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-DefaultPrinterSelectionMode <String>] [-Port <String>] [-AsPersistent] [-WhatIf] [-Confirm] <CommonParameters>
+
+##### ВХОДНЫЕ ДАННЫЕ
+
+- [Microsoft.ActiveDirectory.Management.ADObject][]
+ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
+
+##### ПАРАМЕТРЫ
+
+- `[ADObject] InputObject`
+	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
+	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
+	* Требуется? да
+	* Позиция? 1
+	* Принимать входные данные конвейера? true (ByValue)
+	* Принимать подстановочные знаки? нет
+
+- `[String] Domain`
+	домен
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `( ( Get-ADDomain ).DNSRoot )`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Server`
+	Контроллер домена Active Directory
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] DefaultPrinterSelectionMode`
+	Устанавливать ли принтер как принтер по умолчанию при отсутствии локальных принтеров
+	* Тип: [System.String][]
+	* Псевдонимы: Default
+	* Требуется? нет
+	* Позиция? named
+	* Значение по умолчанию `DefaultPrinterWhenNoLocalPrintersPresent`
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[String] Port`
+	Ассоцирировать подключенный принтер с указанным портом
+	* Тип: [System.String][]
+	* Требуется? нет
+	* Позиция? named
+	* Принимать входные данные конвейера? false
+	* Принимать подстановочные знаки? нет
+
+- `[SwitchParameter] AsPersistent`
+	Устанавливать ли подключение к принтеру как постоянное. В этом случае даже при невозможности применения групповых политик при загрузке
+	принтер будет доступен пользователям. В противном случае принтер будет подключаться только после применения групповых политик и только в случае
+	возможности применения групповых политик.
+	
+
+- `[SwitchParameter] WhatIf`
+	* Псевдонимы: wi
+
+- `[SwitchParameter] Confirm`
+	* Псевдонимы: cf
+
+- `<CommonParameters>`
+	Этот командлет поддерживает общие параметры: Verbose, Debug,
+	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
+	[about_CommonParameters][].
+
+
+##### ПРИМЕРЫ
+
+1. Создаём (при отсутствии) группы безопасности и объект GPO для всех
+очередей печати
+
+		Get-ADPrintQueue | Update-ADPrintQueueEnvironment -Verbose
+
+##### ПРИМЕЧАНИЯ
+
+Этот командлет не работает со снимками Active Directory.
+
+##### ССЫЛКИ ПО ТЕМЕ
+
+- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Update-ADPrintQueueEnvironment)
+- [New-ADPrintQueueGPO][]
+- [New-ADPrintQueueGroup][]
 - [Get-ADPrintQueue][]
 
 #### Get-ADPrintQueueGPO
@@ -1107,11 +1296,13 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [New-ADPrintQueueGPO]: <#new-adprintqueuegpo> "Создаёт групповую политику, применяемую к пользователям указанного объекта printQueue."
 [New-ADPrintQueueGroup]: <#new-adprintqueuegroup> "Создаёт группы безопасности для указанного объекта printQueue."
 [New-GPO]: <http://go.microsoft.com/fwlink/?linkid=216711> "Creates a new GPO."
+[Remove-ADPrintQueueEnvironment]: <#remove-adprintqueueenvironment> "Удаляет группы безопасности и объект GPO для указанной очереди печати."
 [System.Int32]: <http://msdn.microsoft.com/ru-ru/library/system.int32.aspx> "Int32 Class (System)"
 [System.String]: <http://msdn.microsoft.com/ru-ru/library/system.string.aspx> "String Class (System)"
 [Test-ADPrintQueue]: <#test-adprintqueue> "Определяет существует ли объект AD с классом printQueue с указанными фильтрами."
 [Test-ADPrintQueueGPO]: <#test-adprintqueuegpo> "Проверяет наличие объекта групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Test-DomainUtilsConfiguration]: <#test-domainutilsconfiguration> "Проверяем наличие конфигурации модуля для указанного домена."
+[Update-ADPrintQueueEnvironment]: <#update-adprintqueueenvironment> "Создаёт (при отсутствии) группы безопасности и объект GPO."
 
 ---------------------------------------
 

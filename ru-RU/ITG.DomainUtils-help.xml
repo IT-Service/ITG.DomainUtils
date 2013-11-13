@@ -1160,6 +1160,119 @@
 	</command>
 	<command xmlns:msh="http://msh" xmlns="http://schemas.microsoft.com/maml/dev/command/2004/10">
 		<details>
+			<name>Remove-ADPrintQueueEnvironment</name>
+			<verb>Remove</verb>
+			<noun>ADPrintQueueEnvironment</noun>
+			<maml:description>
+				<maml:para>Удаляет группы безопасности и объект GPO для указанной очереди печати.</maml:para>
+			</maml:description>
+			<maml:copyright>
+				<maml:para>(c) 2013 Sergey S. Betke. All rights reserved.</maml:para>
+			</maml:copyright>
+			<dev:version>0.1.0</dev:version>
+		</details>
+		<maml:description>
+			<maml:para>Удаляет группы безопасности и объект GPO для указанной через InputObject очереди печати.</maml:para>
+		</maml:description>
+		<syntax>
+			<syntaxItem>
+				<maml:name>Remove-ADPrintQueueEnvironment</maml:name>
+				<parameter required="true" position="1" pipelineInput="true (ByValue)" globbing="false">
+					<maml:name>InputObject</maml:name>
+					<parameterValue required="true">ADObject</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Domain</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>WhatIf</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Confirm</maml:name>
+				</parameter>
+			</syntaxItem>
+		</syntax>
+		<parameters>
+			<parameter required="true" position="1" pipelineInput="true (ByValue)" globbing="false">
+				<maml:name>InputObject</maml:name>
+				<maml:description>
+					<maml:para>идентификация объекта AD (см. about_ActiveDirectory_Identity)</maml:para>
+				</maml:description>
+				<parameterValue required="True">ADObject</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Domain</maml:name>
+				<maml:description>
+					<maml:para>домен</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Server</maml:name>
+				<maml:description>
+					<maml:para>Контроллер домена Active Directory</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>WhatIf</maml:name>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Confirm</maml:name>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+			</parameter>
+		</parameters>
+		<inputTypes>
+			<inputType>
+				<dev:type>
+					<maml:name>Microsoft.ActiveDirectory.Management.ADObject</maml:name>
+					<maml:description>
+						<maml:para>ADObject класса printQueue, возвращаемый Get-ADPrintQueue.</maml:para>
+					</maml:description>
+				</dev:type>
+				<maml:description>
+					<maml:para>ADObject класса printQueue, возвращаемый Get-ADPrintQueue.</maml:para>
+				</maml:description>
+			</inputType>
+		</inputTypes>
+		<maml:alertSet>
+			<maml:alert>
+				<maml:para>Этот командлет не работает со снимками Active Directory.</maml:para>
+			</maml:alert>
+		</maml:alertSet>
+		<examples>
+			<example>
+				<maml:title>-------------------------- ПРИМЕР 1 --------------------------</maml:title>
+				<maml:introduction>
+					<maml:paragraph>C:\PS&gt;</maml:paragraph>
+				</maml:introduction>
+				<dev:code>Get-ADPrintQueue | Remove-ADPrintQueueEnvironment -Verbose</dev:code>
+				<maml:remarks>
+					<maml:para>Удаляем группы безопасности и объекты GPO для всех очередей печати.</maml:para>
+				</maml:remarks>
+			</example>
+		</examples>
+		<maml:relatedLinks>
+			<maml:navigationLink>
+				<maml:uri>https://github.com/IT-Service/ITG.DomainUtils#Remove-ADPrintQueueEnvironment</maml:uri>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>Update-ADPrintQueueEnvironment</maml:linkText>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>Get-ADPrintQueue</maml:linkText>
+			</maml:navigationLink>
+		</maml:relatedLinks>
+	</command>
+	<command xmlns:msh="http://msh" xmlns="http://schemas.microsoft.com/maml/dev/command/2004/10">
+		<details>
 			<name>Test-ADPrintQueue</name>
 			<verb>Test</verb>
 			<noun>ADPrintQueue</noun>
@@ -1512,6 +1625,156 @@
 		<maml:relatedLinks>
 			<maml:navigationLink>
 				<maml:uri>https://github.com/IT-Service/ITG.DomainUtils#Test-DomainUtilsConfiguration</maml:uri>
+			</maml:navigationLink>
+		</maml:relatedLinks>
+	</command>
+	<command xmlns:msh="http://msh" xmlns="http://schemas.microsoft.com/maml/dev/command/2004/10">
+		<details>
+			<name>Update-ADPrintQueueEnvironment</name>
+			<verb>Update</verb>
+			<noun>ADPrintQueueEnvironment</noun>
+			<maml:description>
+				<maml:para>Создаёт (при отсутствии) группы безопасности и объект GPO.</maml:para>
+			</maml:description>
+			<maml:copyright>
+				<maml:para>(c) 2013 Sergey S. Betke. All rights reserved.</maml:para>
+			</maml:copyright>
+			<dev:version>0.1.0</dev:version>
+		</details>
+		<maml:description>
+			<maml:para>Создаёт (при отсутствии) группы безопасности и объект GPO для указанной через InputObject очереди печати.</maml:para>
+		</maml:description>
+		<syntax>
+			<syntaxItem>
+				<maml:name>Update-ADPrintQueueEnvironment</maml:name>
+				<parameter required="true" position="1" pipelineInput="true (ByValue)" globbing="false">
+					<maml:name>InputObject</maml:name>
+					<parameterValue required="true">ADObject</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Domain</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Server</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>DefaultPrinterSelectionMode</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Port</maml:name>
+					<parameterValue required="false">String</parameterValue>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>AsPersistent</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>WhatIf</maml:name>
+				</parameter>
+				<parameter required="false" position="named" pipelineInput="false" globbing="false">
+					<maml:name>Confirm</maml:name>
+				</parameter>
+			</syntaxItem>
+		</syntax>
+		<parameters>
+			<parameter required="true" position="1" pipelineInput="true (ByValue)" globbing="false">
+				<maml:name>InputObject</maml:name>
+				<maml:description>
+					<maml:para>идентификация объекта AD (см. about_ActiveDirectory_Identity)</maml:para>
+				</maml:description>
+				<parameterValue required="True">ADObject</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Domain</maml:name>
+				<maml:description>
+					<maml:para>домен</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>( ( Get-ADDomain ).DNSRoot )</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Server</maml:name>
+				<maml:description>
+					<maml:para>Контроллер домена Active Directory</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>DefaultPrinterSelectionMode</maml:name>
+				<maml:description>
+					<maml:para>Устанавливать ли принтер как принтер по умолчанию при отсутствии локальных принтеров</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+				<defaultValue>DefaultPrinterWhenNoLocalPrintersPresent</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Port</maml:name>
+				<maml:description>
+					<maml:para>Ассоцирировать подключенный принтер с указанным портом</maml:para>
+				</maml:description>
+				<parameterValue required="True">String</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>AsPersistent</maml:name>
+				<maml:description>
+					<maml:para>Устанавливать ли подключение к принтеру как постоянное. В этом случае даже при невозможности применения групповых политик при загрузке принтер будет доступен пользователям. В противном случае принтер будет подключаться только после применения групповых политик и только в случае возможности применения групповых политик.</maml:para>
+				</maml:description>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+				<defaultValue>False</defaultValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>WhatIf</maml:name>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+			</parameter>
+			<parameter required="false" position="named" pipelineInput="false" globbing="false">
+				<maml:name>Confirm</maml:name>
+				<parameterValue required="True">SwitchParameter</parameterValue>
+			</parameter>
+		</parameters>
+		<inputTypes>
+			<inputType>
+				<dev:type>
+					<maml:name>Microsoft.ActiveDirectory.Management.ADObject</maml:name>
+					<maml:description>
+						<maml:para>ADObject класса printQueue, возвращаемый Get-ADPrintQueue.</maml:para>
+					</maml:description>
+				</dev:type>
+				<maml:description>
+					<maml:para>ADObject класса printQueue, возвращаемый Get-ADPrintQueue.</maml:para>
+				</maml:description>
+			</inputType>
+		</inputTypes>
+		<maml:alertSet>
+			<maml:alert>
+				<maml:para>Этот командлет не работает со снимками Active Directory.</maml:para>
+			</maml:alert>
+		</maml:alertSet>
+		<examples>
+			<example>
+				<maml:title>-------------------------- ПРИМЕР 1 --------------------------</maml:title>
+				<maml:introduction>
+					<maml:paragraph>C:\PS&gt;</maml:paragraph>
+				</maml:introduction>
+				<dev:code>Get-ADPrintQueue | Update-ADPrintQueueEnvironment -Verbose</dev:code>
+				<maml:remarks>
+					<maml:para>Создаём (при отсутствии) группы безопасности и объект GPO для всех очередей печати</maml:para>
+				</maml:remarks>
+			</example>
+		</examples>
+		<maml:relatedLinks>
+			<maml:navigationLink>
+				<maml:uri>https://github.com/IT-Service/ITG.DomainUtils#Update-ADPrintQueueEnvironment</maml:uri>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>New-ADPrintQueueGPO</maml:linkText>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>New-ADPrintQueueGroup</maml:linkText>
+			</maml:navigationLink>
+			<maml:navigationLink>
+				<maml:linkText>Get-ADPrintQueue</maml:linkText>
 			</maml:navigationLink>
 		</maml:relatedLinks>
 	</command>

@@ -97,6 +97,8 @@ Export-ModuleMember `
 		, New-ADPrintQueueGPO `
 		, Get-ADPrintQueueGPO `
 		, Test-ADPrintQueueGPO `
+		, Update-ADPrintQueueEnvironment `
+		, Remove-ADPrintQueueEnvironment `
 	-Alias `
 		Get-ADPrinter `
 		, Test-ADPrinter `
@@ -105,4 +107,6 @@ Export-ModuleMember `
 		, New-ADPrinterGPO `
 		, Get-ADPrinterGPO `
 		, Test-ADPrinterGPO `
+		, Update-ADPrinterEnvironment `
+		, Remove-ADPrinterEnvironment `
 ;

@@ -77,7 +77,7 @@ Function Initialize-DomainUtilsConfiguration {
 
 	try {
 		if ( -not  $Server ) {
-			$Server = ( Get-ADDomainController ).HostName;
+			$Server = ( Get-ADDomainController -Discover -DomainName $Domain -Writable ).HostName;
 		};
 		$ADDomain = Get-ADDomain `
 			-Identity $Domain `
@@ -244,7 +244,7 @@ Function Get-DomainUtilsConfiguration {
 
 	try {
 		if ( -not  $Server ) {
-			$Server = ( Get-ADDomainController ).HostName;
+			$Server = ( Get-ADDomainController -Discover -DomainName $Domain -Writable ).HostName;
 		};
 		$ADDomain = Get-ADDomain `
 			-Identity $Domain `

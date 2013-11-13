@@ -721,7 +721,7 @@ Function New-ADPrintQueueGPO {
 	process {
 		try {
 			if ( -not  $Server ) {
-				$Server = ( Get-ADDomainController ).HostName;
+				$Server = ( Get-ADDomainController -Discover -DomainName $Domain -Writable ).HostName;
 			};
 			$ADDomain = Get-ADDomain `
 				-Identity $Domain `
@@ -958,7 +958,7 @@ Function Get-ADPrintQueueGPO {
 	process {
 		try {
 			if ( -not  $Server ) {
-				$Server = ( Get-ADDomainController ).HostName;
+				$Server = ( Get-ADDomainController -Discover -DomainName $Domain -Writable ).HostName;
 			};
 			$ADDomain = Get-ADDomain `
 				-Identity $Domain `
@@ -1070,3 +1070,258 @@ Function Test-ADPrintQueueGPO {
 }
 
 New-Alias -Name Test-ADPrinterGPO -Value Test-ADPrintQueueGPO -Force;
+
+Function Update-ADPrintQueueEnvironment {
+<#
+.Synopsis
+	Создаёт (при отсутствии) группы безопасности и объект GPO.
+.Description
+	Создаёт (при отсутствии) группы безопасности и объект GPO для указанной
+	через InputObject очереди печати.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#Update-ADPrintQueueEnvironment
+.Link
+	New-ADPrintQueueGPO
+.Link
+	New-ADPrintQueueGroup
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue | Update-ADPrintQueueEnvironment -Verbose
+	Создаём (при отсутствии) группы безопасности и объект GPO для всех
+	очередей печати
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $true
+		, ConfirmImpact = 'Medium'
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Update-ADPrintQueueEnvironment'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $true
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
+		} )]
+		$InputObject
+	,
+		# домен
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	,
+		# Устанавливать ли принтер как принтер по умолчанию при отсутствии локальных принтеров
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		[ValidateSet(
+			'DefaultPrinterWhenNoLocalPrintersPresent'
+			, 'DefaultPrinter'
+			, 'DontChangeDefaultPrinter'
+		)]
+		[Alias( 'Default' )]
+		$DefaultPrinterSelectionMode = 'DefaultPrinterWhenNoLocalPrintersPresent'
+	,
+		# Ассоцирировать подключенный принтер с указанным портом
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Port = ''
+	,
+		# Устанавливать ли подключение к принтеру как постоянное. В этом случае даже при невозможности применения групповых политик при загрузке
+		# принтер будет доступен пользователям. В противном случае принтер будет подключаться только после применения групповых политик и только в случае
+		# возможности применения групповых политик.
+		[Switch]
+		$AsPersistent
+	)
+
+	process {
+		try {
+			if ( -not  $Server ) {
+				$Server = ( Get-ADDomainController -Discover -DomainName $Domain -Writable ).HostName;
+			};
+			$ADDomain = Get-ADDomain `
+				-Identity $Domain `
+				-Server $Server `
+			;
+			$Config = Get-DomainUtilsConfiguration `
+				-Domain $Domain `
+				-Server $Server `
+			;
+			$Users = Get-ADPrintQueueGroup `
+				-InputObject $InputObject `
+				-GroupType Users `
+				-Domain $Domain `
+				-Server $Server `
+				-ErrorAction SilentlyContinue `
+			;
+			if ( -not $Users ) {
+				$Users = New-ADPrintQueueGroup `
+					-InputObject $InputObject `
+					-GroupType Users `
+					-Domain $Domain `
+					-Server $Server `
+					-PassThru `
+					-Verbose:$VerbosePreference `
+				;
+			};
+			$Admins = Get-ADPrintQueueGroup `
+				-InputObject $InputObject `
+				-GroupType Administrators `
+				-Domain $Domain `
+				-Server $Server `
+				-ErrorAction SilentlyContinue `
+			;
+			if ( -not $Admins ) {
+				$Admins = New-ADPrintQueueGroup `
+					-InputObject $InputObject `
+					-GroupType Administrators `
+					-Domain $Domain `
+					-Server $Server `
+					-PassThru `
+					-Verbose:$VerbosePreference `
+				;
+			};
+			if ( -not ( Test-ADPrintQueueGPO `
+				-InputObject $InputObject `
+				-Domain $Domain `
+				-Server $Server `
+			) ) {
+				New-ADPrintQueueGPO `
+					-InputObject $InputObject `
+					-Domain $Domain `
+					-Server $Server `
+					-DefaultPrinterSelectionMode $DefaultPrinterSelectionMode `
+					-Port $Port `
+					-AsPersistent:$AsPersistent `
+					-Verbose:$VerbosePreference `
+				;
+			};
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
+		};
+	}
+}
+
+New-Alias -Name Update-ADPrinterEnvironment -Value Update-ADPrintQueueEnvironment -Force;
+
+Function Remove-ADPrintQueueEnvironment {
+<#
+.Synopsis
+	Удаляет группы безопасности и объект GPO для указанной очереди печати.
+.Description
+	Удаляет группы безопасности и объект GPO для указанной
+	через InputObject очереди печати.
+.Notes
+	Этот командлет не работает со снимками Active Directory.
+.Inputs
+	Microsoft.ActiveDirectory.Management.ADObject
+	ADObject класса printQueue, возвращаемый Get-ADPrintQueue.
+.Link
+	https://github.com/IT-Service/ITG.DomainUtils#Remove-ADPrintQueueEnvironment
+.Link
+	Update-ADPrintQueueEnvironment
+.Link
+	Get-ADPrintQueue
+.Example
+	Get-ADPrintQueue | Remove-ADPrintQueueEnvironment -Verbose
+	Удаляем группы безопасности и объекты GPO для всех
+	очередей печати.
+#>
+	[CmdletBinding(
+		SupportsShouldProcess = $true
+		, ConfirmImpact = 'High'
+		, HelpUri = 'https://github.com/IT-Service/ITG.DomainUtils#Remove-ADPrintQueueEnvironment'
+	)]
+
+	param (
+		# идентификация объекта AD (см. about_ActiveDirectory_Identity)
+		[Parameter(
+			Mandatory = $true
+			, Position = 0
+			, ValueFromPipeline = $true
+		)]
+		[Microsoft.ActiveDirectory.Management.ADObject]
+		[ValidateScript( {
+			( $_.objectClass -eq 'printQueue' ) `
+			-and ( $_.printerName ) `
+		} )]
+		$InputObject
+	,
+		# домен
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Domain = ( ( Get-ADDomain ).DNSRoot )
+	,
+		# Контроллер домена Active Directory
+		[Parameter(
+			Mandatory = $false
+		)]
+		[String]
+		$Server
+	)
+
+	process {
+		try {
+			if ( -not  $Server ) {
+				$Server = ( Get-ADDomainController -Discover -DomainName $Domain -Writable ).HostName;
+			};
+			$ADDomain = Get-ADDomain `
+				-Identity $Domain `
+				-Server $Server `
+			;
+			$InputObject `
+			| Get-ADPrinterGPO `
+				-Domain $Domain `
+				-Server $Server `
+				-ErrorAction SilentlyContinue `
+			| Remove-GPO `
+				-Domain $Domain `
+				-Server $Server `
+				-Verbose:$VerbosePreference `
+			;
+			$InputObject `
+			| Get-ADPrintQueueGroup `
+				-GroupType Administrators, Users `
+				-Domain $Domain `
+				-Server $Server `
+				-ErrorAction SilentlyContinue `
+			| Remove-ADGroup `
+				-Server $Server `
+				-Verbose:$VerbosePreference `
+			;
+		} catch {
+			Write-Error `
+				-ErrorRecord $_ `
+			;
+		};
+	}
+}
+
+New-Alias -Name Remove-ADPrinterEnvironment -Value Remove-ADPrintQueueEnvironment -Force;
