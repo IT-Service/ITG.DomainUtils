@@ -37,26 +37,6 @@
 
 	Test-ADPrintQueue -LDAPFilter <String> [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
-### ADPrintQueueContainer
-
-#### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueContainer][]
-
-Возвращает контейнер AD для объекта printQueue.
-
-	Get-ADPrintQueueContainer [[-InputObject] <ADObject>] [-Properties <String[]>] [-Domain <String>] [-Server <String>] <CommonParameters>
-
-#### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueContainer][]
-
-Создаёт контейнер AD для указанного объекта printQueue.
-
-	New-ADPrintQueueContainer [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
-
-#### КРАТКОЕ ОПИСАНИЕ [Test-ADPrintQueueContainer][]
-
-Проверяет наличие контейнера AD для указанного объекта printQueue.
-
-	Test-ADPrintQueueContainer [[-InputObject] <ADObject>] [-Domain <String>] [-Server <String>] <CommonParameters>
-
 ### ADPrintQueueGPO
 
 #### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGPO][]
@@ -121,17 +101,14 @@
 
 
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
-[Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
 [Get-ADPrintQueueGPO]: <#get-adprintqueuegpo> "Возвращает объект групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Get-ADPrintQueueGroup]: <#get-adprintqueuegroup> "Возвращает затребованные группы безопасности для указанного объекта printQueue."
 [Get-DomainUtilsConfiguration]: <#get-domainutilsconfiguration> "Получаем объект, содержащий конфигурацию модуля для указанного домена."
 [Initialize-ADPrintQueuesEnvironment]: <#initialize-adprintqueuesenvironment> "Создаёт корневой контейнер для контейнеров объектов printQueue."
 [Initialize-DomainUtilsConfiguration]: <#initialize-domainutilsconfiguration> "Инициализация конфигурации модуля."
-[New-ADPrintQueueContainer]: <#new-adprintqueuecontainer> "Создаёт контейнер AD для указанного объекта printQueue."
 [New-ADPrintQueueGPO]: <#new-adprintqueuegpo> "Создаёт групповую политику, применяемую к пользователям указанного объекта printQueue."
 [New-ADPrintQueueGroup]: <#new-adprintqueuegroup> "Создаёт группы безопасности для указанного объекта printQueue."
 [Test-ADPrintQueue]: <#test-adprintqueue> "Определяет существует ли объект AD с классом printQueue с указанными фильтрами."
-[Test-ADPrintQueueContainer]: <#test-adprintqueuecontainer> "Проверяет наличие контейнера AD для указанного объекта printQueue."
 [Test-ADPrintQueueGPO]: <#test-adprintqueuegpo> "Проверяет наличие объекта групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Test-DomainUtilsConfiguration]: <#test-domainutilsconfiguration> "Проверяем наличие конфигурации модуля для указанного домена."
 

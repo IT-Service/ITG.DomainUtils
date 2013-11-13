@@ -92,9 +92,6 @@ Export-ModuleMember `
 		, Get-ADPrintQueue `
 		, Test-ADPrintQueue `
 		, Initialize-ADPrintQueuesEnvironment `
-		, Get-ADPrintQueueContainer `
-		, Test-ADPrintQueueContainer `
-		, New-ADPrintQueueContainer `
 		, New-ADPrintQueueGroup `
 		, Get-ADPrintQueueGroup `
 		, New-ADPrintQueueGPO `
@@ -103,9 +100,6 @@ Export-ModuleMember `
 	-Alias `
 		Get-ADPrinter `
 		, Test-ADPrinter `
-		, Get-ADPrinterContainer `
-		, Test-ADPrinterContainer `
-		, New-ADPrinterContainer `
 		, New-ADPrinterGroup `
 		, Get-ADPrinterGroup `
 		, New-ADPrinterGPO `

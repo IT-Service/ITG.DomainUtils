@@ -287,6 +287,13 @@ Function Get-DomainUtilsConfiguration {
 				} else {
 					$ConfigCache.Item( $ADDomain.DNSRoot ).ContainerPathTemplate = 'CN={0}';
 				};
+				$ConfigCache.Item( $ADDomain.DNSRoot ).PrintQueuesContainer = "$(
+						[String]::Format(
+							$ConfigCache.Item( $ADDomain.DNSRoot ).ContainerPathTemplate
+							, $ConfigCache.Item( $ADDomain.DNSRoot ).PrintQueuesContainerName
+						)
+					),$( $ConfigCache.Item( $ADDomain.DNSRoot ).DomainUtilsBase )"
+				;
 				return $ConfigCache.Item( $ADDomain.DNSRoot );
 			};
 		};

@@ -37,26 +37,6 @@
 
 	Test-ADPrintQueue -LDAPFilter <String> [-SearchBase <String>] [-SearchScope] [-Server <String>] <CommonParameters>
 
-### ADPrintQueueContainer
-
-#### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueContainer][]
-
-Возвращает контейнер AD для объекта printQueue.
-
-	Get-ADPrintQueueContainer [[-InputObject] <ADObject>] [-Properties <String[]>] [-Domain <String>] [-Server <String>] <CommonParameters>
-
-#### КРАТКОЕ ОПИСАНИЕ [New-ADPrintQueueContainer][]
-
-Создаёт контейнер AD для указанного объекта printQueue.
-
-	New-ADPrintQueueContainer [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
-
-#### КРАТКОЕ ОПИСАНИЕ [Test-ADPrintQueueContainer][]
-
-Проверяет наличие контейнера AD для указанного объекта printQueue.
-
-	Test-ADPrintQueueContainer [[-InputObject] <ADObject>] [-Domain <String>] [-Server <String>] <CommonParameters>
-
 ### ADPrintQueueGPO
 
 #### КРАТКОЕ ОПИСАНИЕ [Get-ADPrintQueueGPO][]
@@ -403,256 +383,6 @@ ADObject принимаемый параметром `Identity`.
 
 - [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueue)
 - [Get-ADPrintQueue][]
-
-#### Get-ADPrintQueueContainer
-
-[Get-ADPrintQueueContainer][] возвращает объект контейнера для указанного
-через InputObject объекта printQueue.
-
-##### ПСЕВДОНИМЫ
-
-Get-ADPrinterContainer
-
-##### СИНТАКСИС
-
-	Get-ADPrintQueueContainer [[-InputObject] <ADObject>] [-Properties <String[]>] [-Domain <String>] [-Server <String>] <CommonParameters>
-
-##### ВХОДНЫЕ ДАННЫЕ
-
-- [Microsoft.ActiveDirectory.Management.ADObject][]
-ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
-Если объект не указан, будут возвращены все контейнеры созданные для очередей печати.
-
-##### ВЫХОДНЫЕ ДАННЫЕ
-
-- [Microsoft.ActiveDirectory.Management.ADObject][]
-Возвращает контейнер для указанного объекта класса printQueue.
-
-##### ПАРАМЕТРЫ
-
-- `[ADObject] InputObject`
-	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
-	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
-	* Требуется? нет
-	* Позиция? 1
-	* Принимать входные данные конвейера? true (ByValue)
-	* Принимать подстановочные знаки? нет
-
-- `[String[]] Properties`
-	Перечень свойств объекта контейнера для запроса из ActiveDirectory
-	* Тип: [System.String][][]
-	* Требуется? нет
-	* Позиция? named
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
-- `[String] Domain`
-	домен
-	* Тип: [System.String][]
-	* Требуется? нет
-	* Позиция? named
-	* Значение по умолчанию `( ( Get-ADDomain ).DNSRoot )`
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
-- `[String] Server`
-	Контроллер домена Active Directory
-	* Тип: [System.String][]
-	* Требуется? нет
-	* Позиция? named
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
-- `<CommonParameters>`
-	Этот командлет поддерживает общие параметры: Verbose, Debug,
-	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-	[about_CommonParameters][].
-
-
-##### ПРИМЕРЫ
-
-1. Возвращает контейнер для очереди печати 'prn001'.
-
-		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Get-ADPrintQueueContainer
-
-##### ПРИМЕЧАНИЯ
-
-Этот командлет не работает со снимками Active Directory.
-
-##### ССЫЛКИ ПО ТЕМЕ
-
-- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Get-ADPrintQueueContainer)
-- [Get-ADObject][]
-- [Get-ADPrintQueue][]
-
-#### New-ADPrintQueueContainer
-
-[New-ADPrintQueueContainer][] создаёт объект контейнера для указанного
-через InputObject объекта printQueue.
-
-##### ПСЕВДОНИМЫ
-
-New-ADPrinterContainer
-
-##### СИНТАКСИС
-
-	New-ADPrintQueueContainer [-InputObject] <ADObject> [-Domain <String>] [-Server <String>] [-PassThru] [-WhatIf] [-Confirm] <CommonParameters>
-
-##### ВХОДНЫЕ ДАННЫЕ
-
-- [Microsoft.ActiveDirectory.Management.ADObject][]
-ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
-
-##### ВЫХОДНЫЕ ДАННЫЕ
-
-- [Microsoft.ActiveDirectory.Management.ADObject][]
-Возвращает контейнер для указанного объекта класса printQueue
-при выполнении с ключом PassThru.
-
-##### ПАРАМЕТРЫ
-
-- `[ADObject] InputObject`
-	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
-	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
-	* Требуется? да
-	* Позиция? 1
-	* Принимать входные данные конвейера? true (ByValue)
-	* Принимать подстановочные знаки? нет
-
-- `[String] Domain`
-	домен
-	* Тип: [System.String][]
-	* Требуется? нет
-	* Позиция? named
-	* Значение по умолчанию `( ( Get-ADDomain ).DNSRoot )`
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
-- `[String] Server`
-	Контроллер домена Active Directory
-	* Тип: [System.String][]
-	* Требуется? нет
-	* Позиция? named
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
-- `[SwitchParameter] PassThru`
-	Передавать ли созданный контейнер далее по конвейеру
-	
-
-- `[SwitchParameter] WhatIf`
-	* Псевдонимы: wi
-
-- `[SwitchParameter] Confirm`
-	* Псевдонимы: cf
-
-- `<CommonParameters>`
-	Этот командлет поддерживает общие параметры: Verbose, Debug,
-	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-	[about_CommonParameters][].
-
-
-##### ПРИМЕРЫ
-
-1. Создаёт контейнер для очереди печати 'prn001'.
-
-		Get-ADPrintQueue -Filter {name -eq 'prn001'} | New-ADPrintQueueContainer
-
-2. Создаёт контейнеры для всех очередей печати, если они не сущетвуют,
-и выполняет для каждого созданного то либо иное действие.
-Если контейнер уже существует, он не удаляется и не пересоздаётся, и дополнительных
-действий для него выполнено не будет.
-
-		Get-ADPrintQueue | New-ADPrintQueueContainer -PassThru | % { do-something }
-
-3. Создаём только отсутствующие контейнеры для всех зарегистрированных в AD очередей печати.
-
-		Get-ADPrintQueue | ? { -not ( Test-ADPrintQueueContainer $_ ) } | New-ADPrintQueueContainer -Confirm
-
-##### ПРИМЕЧАНИЯ
-
-Этот командлет не работает со снимками Active Directory.
-
-##### ССЫЛКИ ПО ТЕМЕ
-
-- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#New-ADPrintQueueContainer)
-- [New-ADObject][]
-- [Get-ADPrintQueue][]
-
-#### Test-ADPrintQueueContainer
-
-Проверяет наличие контейнера AD для указанного объекта printQueue.
-
-##### ПСЕВДОНИМЫ
-
-Test-ADPrinterContainer
-
-##### СИНТАКСИС
-
-	Test-ADPrintQueueContainer [[-InputObject] <ADObject>] [-Domain <String>] [-Server <String>] <CommonParameters>
-
-##### ВХОДНЫЕ ДАННЫЕ
-
-- [Microsoft.ActiveDirectory.Management.ADObject][]
-ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
-
-##### ВЫХОДНЫЕ ДАННЫЕ
-
-- bool
-истина - объекты, соответствующие указанным ограничениям, существуют;
-ложь - не существуют
-
-##### ПАРАМЕТРЫ
-
-- `[ADObject] InputObject`
-	идентификация объекта AD (см. [about_ActiveDirectory_Identity][])
-	* Тип: [Microsoft.ActiveDirectory.Management.ADObject][]
-	* Требуется? нет
-	* Позиция? 1
-	* Принимать входные данные конвейера? true (ByValue)
-	* Принимать подстановочные знаки? нет
-
-- `[String] Domain`
-	домен
-	* Тип: [System.String][]
-	* Требуется? нет
-	* Позиция? named
-	* Значение по умолчанию `( ( Get-ADDomain ).DNSRoot )`
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
-- `[String] Server`
-	Контроллер домена Active Directory
-	* Тип: [System.String][]
-	* Требуется? нет
-	* Позиция? named
-	* Принимать входные данные конвейера? false
-	* Принимать подстановочные знаки? нет
-
-- `<CommonParameters>`
-	Этот командлет поддерживает общие параметры: Verbose, Debug,
-	ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-	OutBuffer и OutVariable. Для получения дополнительных сведений см. раздел
-	[about_CommonParameters][].
-
-
-##### ПРИМЕРЫ
-
-1. Проверяем наличие контейнера для очереди печати 'prn001'.
-
-		Get-ADPrintQueue -Filter {name -eq 'prn001'} | Test-ADPrintQueueContainer
-
-##### ПРИМЕЧАНИЯ
-
-Этот командлет не работает со снимками Active Directory.
-
-##### ССЫЛКИ ПО ТЕМЕ
-
-- [Интернет версия](https://github.com/IT-Service/ITG.DomainUtils#Test-ADPrintQueueContainer)
-- [Get-ADPrintQueueContainer][]
-- [Get-ADObject][]
 
 #### Get-ADPrintQueueGPO
 
@@ -1364,7 +1094,6 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [Get-ADGroup]: <http://go.microsoft.com/fwlink/?linkid=219302> "Gets one or more Active Directory groups."
 [Get-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219298> "Gets one or more Active Directory objects."
 [Get-ADPrintQueue]: <#get-adprintqueue> "Возвращает один или несколько объектов AD с классом printQueue."
-[Get-ADPrintQueueContainer]: <#get-adprintqueuecontainer> "Возвращает контейнер AD для объекта printQueue."
 [Get-ADPrintQueueGPO]: <#get-adprintqueuegpo> "Возвращает объект групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Get-ADPrintQueueGroup]: <#get-adprintqueuegroup> "Возвращает затребованные группы безопасности для указанного объекта printQueue."
 [Get-DomainUtilsConfiguration]: <#get-domainutilsconfiguration> "Получаем объект, содержащий конфигурацию модуля для указанного домена."
@@ -1375,14 +1104,12 @@ ADObject класса printQueue, возвращаемый [Get-ADPrintQueue][].
 [Microsoft.ActiveDirectory.Management.ADSearchScope]: <http://msdn.microsoft.com/ru-ru/library/microsoft.activedirectory.management.adsearchscope.aspx> "ADSearchScope Class (Microsoft.ActiveDirectory.Management)"
 [New-ADGroup]: <http://go.microsoft.com/fwlink/?linkid=219326> "Creates an Active Directory group."
 [New-ADObject]: <http://go.microsoft.com/fwlink/?linkid=219323> "Creates an Active Directory object."
-[New-ADPrintQueueContainer]: <#new-adprintqueuecontainer> "Создаёт контейнер AD для указанного объекта printQueue."
 [New-ADPrintQueueGPO]: <#new-adprintqueuegpo> "Создаёт групповую политику, применяемую к пользователям указанного объекта printQueue."
 [New-ADPrintQueueGroup]: <#new-adprintqueuegroup> "Создаёт группы безопасности для указанного объекта printQueue."
 [New-GPO]: <http://go.microsoft.com/fwlink/?linkid=216711> "Creates a new GPO."
 [System.Int32]: <http://msdn.microsoft.com/ru-ru/library/system.int32.aspx> "Int32 Class (System)"
 [System.String]: <http://msdn.microsoft.com/ru-ru/library/system.string.aspx> "String Class (System)"
 [Test-ADPrintQueue]: <#test-adprintqueue> "Определяет существует ли объект AD с классом printQueue с указанными фильтрами."
-[Test-ADPrintQueueContainer]: <#test-adprintqueuecontainer> "Проверяет наличие контейнера AD для указанного объекта printQueue."
 [Test-ADPrintQueueGPO]: <#test-adprintqueuegpo> "Проверяет наличие объекта групповой политики, применяемой к пользователям указанного объекта printQueue."
 [Test-DomainUtilsConfiguration]: <#test-domainutilsconfiguration> "Проверяем наличие конфигурации модуля для указанного домена."
 
